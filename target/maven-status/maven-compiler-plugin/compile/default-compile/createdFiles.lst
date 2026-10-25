@@ -1,0 +1,9 @@
+com\attendease\config\SecurityConfig.class
+com\attendease\controller\RegistrationController.class
+com\attendease\entity\UserRegistration.class
+com\attendease\repository\UserRegistrationRepository.class
+com\attendease\service\RegistrationServiceImpl.class
+com\attendease\dto\ApiResponse.class
+com\attendease\service\RegistrationService.class
+com\attendease\AttendEaseBackendApplication.class
+com\attendease\dto\RegisterRequest.class
