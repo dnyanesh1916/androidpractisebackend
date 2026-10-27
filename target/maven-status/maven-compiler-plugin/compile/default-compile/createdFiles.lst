@@ -6,4 +6,5 @@ com\attendease\service\RegistrationServiceImpl.class
 com\attendease\dto\ApiResponse.class
 com\attendease\service\RegistrationService.class
 com\attendease\AttendEaseBackendApplication.class
+com\attendease\config\DatabaseCheckConfig.class
 com\attendease\dto\RegisterRequest.class
