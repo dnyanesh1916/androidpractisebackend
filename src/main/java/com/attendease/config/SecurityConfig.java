@@ -40,8 +40,11 @@ public class SecurityConfig {
 
                         // Allow registration without authentication
                         .requestMatchers(
+                                "/api/auth/**",
                                 "/api/register",
                                 "/api/registrations",
+                                "/api/attendance/**",
+                                "/api/admin/**",
                                 "/h2-console/**"
                         ).permitAll()
 
@@ -67,9 +70,13 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Your deployed Angular frontend
+        // Local Angular dev server + deployed frontend
         configuration.setAllowedOrigins(
-                List.of("https://androidpractiseui.netlify.app")
+                List.of(
+                        "http://localhost:4200",
+                        "http://127.0.0.1:4200",
+                        "https://androidpractiseui.netlify.app"
+                )
         );
 
         // HTTP methods permitted by the API
@@ -79,8 +86,10 @@ public class SecurityConfig {
 
         // Headers permitted in browser requests
         configuration.setAllowedHeaders(
-                List.of("Content-Type", "Authorization", "Accept")
+                List.of("Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With")
         );
+
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();

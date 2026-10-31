@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"})
+@CrossOrigin(origins = {
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+        "https://androidpractiseui.netlify.app"
+})
 @RequestMapping("/api")
 public class RegistrationController {
 

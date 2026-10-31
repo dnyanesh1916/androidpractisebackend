@@ -1,0 +1,24 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  datasource:
+    url: ${DB_URL:${DATABASE_URL:jdbc:postgresql://localhost:5432/attendease_db}}
+    username: ${DB_USERNAME:${DB_USER:postgres}}
+    password: ${DB_PASSWORD:${DB_PASS:password}}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+attendease:
+  company:
+    latitude: 18.468571
+    longitude: 77.458331
+    radius-meters: 200
