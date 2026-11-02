@@ -375,3 +375,16 @@ This generated password is for development use only. Your security configuration
 2026-11-02T13:20:46.944+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Password matched using BCrypt encoder
 2026-11-02T13:20:46.945+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Password validation succeeded for email=ram@gmail.com using id=2
 2026-11-02T13:20:46.945+05:30  INFO 2236 --- [http-nio-8080-exec-7] c.attendease.controller.AuthController   : Login successful for email=ram@gmail.com, role=USER
+2026-11-02T13:39:25.455+05:30  INFO 23616 --- [main] c.attendease.RegistrationControllerTest  : Starting RegistrationControllerTest using Java 17.0.11 with PID 23616 (started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T13:39:25.457+05:30  INFO 23616 --- [main] c.attendease.RegistrationControllerTest  : The following 1 profile is active: "local"
+2026-11-02T13:39:26.551+05:30  WARN 23616 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 0563e609-25f6-4043-adee-e61ad972c90d
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T13:39:26.563+05:30  INFO 23616 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T13:39:27.173+05:30  INFO 23616 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-02T13:39:27.173+05:30  INFO 23616 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-02T13:39:27.176+05:30  INFO 23616 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-11-02T13:39:27.206+05:30  INFO 23616 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.249 seconds (process running for 5.281)
