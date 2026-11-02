@@ -357,3 +357,21 @@ This generated password is for development use only. Your security configuration
 2026-11-02T13:18:04.473+05:30  INFO 2236 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Password validation succeeded for email=admin@example.com using id=1
 2026-11-02T13:18:04.583+05:30  WARN 2236 --- [http-nio-8080-exec-4] o.a.c.util.SessionIdGeneratorBase        : Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [101] milliseconds.
 2026-11-02T13:18:04.588+05:30  INFO 2236 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : Login successful for email=admin@example.com, role=ADMIN
+2026-11-02T13:19:40.116+05:30  INFO 2236 --- [http-nio-8080-exec-5] c.attendease.controller.AuthController   : POST /api/auth/login called for email=ram@gmail.com
+2026-11-02T13:19:40.117+05:30  INFO 2236 --- [http-nio-8080-exec-5] com.attendease.service.AuthService       : Attempting login for email=ram@gmail.com
+2026-11-02T13:19:40.124+05:30  INFO 2236 --- [http-nio-8080-exec-5] com.attendease.service.AuthService       : User found for login: id=2, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T13:19:40.301+05:30  INFO 2236 --- [http-nio-8080-exec-5] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T13:19:40.303+05:30  WARN 2236 --- [http-nio-8080-exec-5] c.attendease.controller.AuthController   : Login failed for email=ram@gmail.com with message=Your registration is awaiting administrator approval
+2026-11-02T13:20:05.728+05:30  INFO 2236 --- [http-nio-8080-exec-7] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@example.com
+2026-11-02T13:20:05.730+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Attempting login for email=admin@example.com
+2026-11-02T13:20:05.736+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T13:20:05.924+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T13:20:05.924+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Password validation succeeded for email=admin@example.com using id=1
+2026-11-02T13:20:05.924+05:30  INFO 2236 --- [http-nio-8080-exec-7] c.attendease.controller.AuthController   : Login successful for email=admin@example.com, role=ADMIN
+2026-11-02T13:20:39.296+05:30  INFO 2236 --- [http-nio-8080-exec-3] com.attendease.service.AdminService      : Admin admin@example.com approved registration for userId=2
+2026-11-02T13:20:46.766+05:30  INFO 2236 --- [http-nio-8080-exec-7] c.attendease.controller.AuthController   : POST /api/auth/login called for email=ram@gmail.com
+2026-11-02T13:20:46.768+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Attempting login for email=ram@gmail.com
+2026-11-02T13:20:46.774+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : User found for login: id=2, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T13:20:46.944+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T13:20:46.945+05:30  INFO 2236 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Password validation succeeded for email=ram@gmail.com using id=2
+2026-11-02T13:20:46.945+05:30  INFO 2236 --- [http-nio-8080-exec-7] c.attendease.controller.AuthController   : Login successful for email=ram@gmail.com, role=USER
