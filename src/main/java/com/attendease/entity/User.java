@@ -2,6 +2,7 @@ package com.attendease.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,6 +30,12 @@ public class User {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(columnDefinition = "TEXT")
+    private String profileImage;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal monthlySalary;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -84,6 +91,22 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public BigDecimal getMonthlySalary() {
+        return monthlySalary;
+    }
+
+    public void setMonthlySalary(BigDecimal monthlySalary) {
+        this.monthlySalary = monthlySalary;
     }
 
     public LocalDateTime getCreatedAt() {

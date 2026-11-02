@@ -8,9 +8,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -22,86 +25,50 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   SecurityContextRepository securityContextRepository) throws Exception {
         http
-                // Enable CORS integration with Spring Security
                 .cors(Customizer.withDefaults())
-
-                // Disable CSRF for this stateless REST API
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // Configure endpoint authorization
+                .securityContext(context -> context.securityContextRepository(securityContextRepository))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-
-                        // Allow browser preflight requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Allow registration without authentication
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/register",
-                                "/api/registrations",
-                                "/api/attendance/**",
-                                "/api/admin/**",
-                                "/h2-console/**"
-                        ).permitAll()
-
-                        // Require authentication for other endpoints
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/register", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/admin/**", "/api/registrations").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/attendance/users").hasRole("ADMIN")
+                        .requestMatchers("/api/attendance/**").authenticated()
                         .anyRequest().authenticated()
                 )
-
-                // H2 console support
-                .headers(headers ->
-                        headers.frameOptions(
-                                HeadersConfigurer.FrameOptionsConfig::sameOrigin
-                        )
-                )
-
-                // Retain HTTP Basic authentication
-                .httpBasic(Customizer.withDefaults());
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // Local Angular dev server + deployed frontend
-        configuration.setAllowedOrigins(
-                List.of(
-                        "http://localhost:4200",
-                        "http://127.0.0.1:4200",
-                        "https://androidpractiseui.netlify.app"
-                )
-        );
-
-        // HTTP methods permitted by the API
-        configuration.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-        );
-
-        // Headers permitted in browser requests
-        configuration.setAllowedHeaders(
-                List.of("Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With")
-        );
-
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "http://127.0.0.1:4200",
+                "https://androidpractiseui.netlify.app"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"));
         configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
-

@@ -1,5 +1,10 @@
 server:
   port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+        http-only: true
 
 spring:
   datasource:

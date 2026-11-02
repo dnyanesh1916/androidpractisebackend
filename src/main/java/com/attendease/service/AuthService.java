@@ -40,7 +40,7 @@ public class AuthService {
         }
 
         String email = request.getEmail() == null ? "" : request.getEmail().trim();
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(email) || userRegistrationRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("User with this email already exists");
         }
 
@@ -48,11 +48,13 @@ public class AuthService {
         user.setFullName(request.getFullName().trim());
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setProfileImage(request.getProfileImage());
         user.setRole(Role.USER);
+        user.setActive(false);
 
         User saved = userRepository.save(user);
 
-        return new AuthResponse(saved.getId(), saved.getFullName(), saved.getEmail(), saved.getRole().name(), "Registration successful");
+        return new AuthResponse(saved.getId(), saved.getFullName(), saved.getEmail(), saved.getRole().name(), saved.getProfileImage(), "Registration successful. Awaiting admin approval.");
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -86,8 +88,12 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("Your registration is awaiting administrator approval");
+        }
+
         logger.info("Password validation succeeded for email={} using id={}", email, user.getId());
-        return new AuthResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), "Login successful");
+        return new AuthResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.getProfileImage(), "Login successful");
     }
 
     private boolean isPasswordValid(String rawPassword, String storedPassword) {
@@ -116,7 +122,7 @@ public class AuthService {
         user.setEmail(registration.getEmail());
         user.setPassword(registration.getPassword());
         user.setRole(Role.USER);
-        user.setActive(true);
+        user.setActive(false);
         return user;
     }
 }

@@ -1,0 +1,359 @@
+2026-11-02T10:15:30.741+05:30  INFO 13292 --- [main] c.attendease.RegistrationControllerTest  : Starting RegistrationControllerTest using Java 17.0.11 with PID 13292 (started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T10:15:30.743+05:30  INFO 13292 --- [main] c.attendease.RegistrationControllerTest  : The following 1 profile is active: "local"
+2026-11-02T10:15:31.838+05:30  WARN 13292 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 0882201a-4b1d-4b54-ad6b-fb6c28eb0d06
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T10:15:31.905+05:30  INFO 13292 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T10:15:32.581+05:30  INFO 13292 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-02T10:15:32.582+05:30  INFO 13292 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-02T10:15:32.584+05:30  INFO 13292 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-11-02T10:15:32.613+05:30  INFO 13292 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.396 seconds (process running for 6.018)
+2026-11-02T10:15:49.940+05:30  INFO 40376 --- [main] c.a.AttendEaseBackendApplication         : Starting AttendEaseBackendApplication using Java 17.0.11 with PID 40376 (C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\target\classes started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T10:15:49.943+05:30  INFO 40376 --- [main] c.a.AttendEaseBackendApplication         : The following 1 profile is active: "local"
+2026-11-02T10:15:50.662+05:30  INFO 40376 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-02T10:15:50.754+05:30  INFO 40376 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 82 ms. Found 5 JPA repository interfaces.
+2026-11-02T10:15:51.515+05:30  INFO 40376 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-11-02T10:15:51.531+05:30  INFO 40376 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-02T10:15:51.532+05:30  INFO 40376 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-11-02T10:15:51.621+05:30  INFO 40376 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-02T10:15:51.623+05:30  INFO 40376 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1633 ms
+2026-11-02T10:15:51.662+05:30  INFO 40376 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-02T10:15:51.880+05:30  INFO 40376 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:attendease_local user=SA
+2026-11-02T10:15:51.882+05:30  INFO 40376 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-02T10:15:51.892+05:30  INFO 40376 --- [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:attendease_local'
+2026-11-02T10:15:52.031+05:30  INFO 40376 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-02T10:15:52.117+05:30  INFO 40376 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-11-02T10:15:52.161+05:30  INFO 40376 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-11-02T10:15:52.463+05:30  INFO 40376 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-02T10:15:53.528+05:30  INFO 40376 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-02T10:15:53.603+05:30  INFO 40376 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-02T10:15:53.888+05:30  WARN 40376 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'adminAccountInitializer' defined in file [C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\target\classes\com\attendease\config\AdminAccountInitializer.class]: Unsatisfied dependency expressed through constructor parameter 1: No qualifying bean of type 'org.springframework.security.crypto.password.PasswordEncoder' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2026-11-02T10:15:53.889+05:30  INFO 40376 --- [main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-02T10:15:53.892+05:30  INFO 40376 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-11-02T10:15:53.895+05:30  INFO 40376 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-11-02T10:15:53.897+05:30  INFO 40376 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-11-02T10:15:53.911+05:30  INFO 40376 --- [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-11-02T10:15:53.973+05:30 ERROR 40376 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 1 of constructor in com.attendease.config.AdminAccountInitializer required a bean of type 'org.springframework.security.crypto.password.PasswordEncoder' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'org.springframework.security.crypto.password.PasswordEncoder' in your configuration.
+
+2026-11-02T10:17:33.657+05:30  INFO 30776 --- [main] c.attendease.RegistrationControllerTest  : Starting RegistrationControllerTest using Java 17.0.11 with PID 30776 (started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T10:17:33.659+05:30  INFO 30776 --- [main] c.attendease.RegistrationControllerTest  : The following 1 profile is active: "local"
+2026-11-02T10:17:34.669+05:30  WARN 30776 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 98058b4b-6360-424d-9584-f3c743fb000e
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T10:17:34.684+05:30  INFO 30776 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T10:17:35.272+05:30  INFO 30776 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-02T10:17:35.272+05:30  INFO 30776 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-02T10:17:35.274+05:30  INFO 30776 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-11-02T10:17:35.309+05:30  INFO 30776 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.27 seconds (process running for 6.823)
+2026-11-02T10:18:00.733+05:30  INFO 39900 --- [main] c.a.AttendEaseBackendApplication         : Starting AttendEaseBackendApplication using Java 17.0.11 with PID 39900 (C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\target\classes started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T10:18:00.735+05:30  INFO 39900 --- [main] c.a.AttendEaseBackendApplication         : The following 1 profile is active: "local"
+2026-11-02T10:18:01.409+05:30  INFO 39900 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-02T10:18:01.502+05:30  INFO 39900 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 80 ms. Found 5 JPA repository interfaces.
+2026-11-02T10:18:02.190+05:30  INFO 39900 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-11-02T10:18:02.206+05:30  INFO 39900 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-02T10:18:02.206+05:30  INFO 39900 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-11-02T10:18:02.285+05:30  INFO 39900 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-02T10:18:02.286+05:30  INFO 39900 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1499 ms
+2026-11-02T10:18:02.317+05:30  INFO 39900 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-02T10:18:02.506+05:30  INFO 39900 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:attendease_local user=SA
+2026-11-02T10:18:02.509+05:30  INFO 39900 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-02T10:18:02.518+05:30  INFO 39900 --- [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:attendease_local'
+2026-11-02T10:18:02.673+05:30  INFO 39900 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-02T10:18:02.741+05:30  INFO 39900 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-11-02T10:18:02.777+05:30  INFO 39900 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-11-02T10:18:03.076+05:30  INFO 39900 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-02T10:18:04.135+05:30  INFO 39900 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-02T10:18:04.213+05:30  INFO 39900 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-02T10:18:04.876+05:30  INFO 39900 --- [main] com.attendease.service.AdminService      : Created initial attendance location from application configuration
+2026-11-02T10:18:04.941+05:30  WARN 39900 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-11-02T10:18:04.958+05:30  WARN 39900 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: e2609458-49fd-4835-8eb5-b370422caf15
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T10:18:04.965+05:30  INFO 39900 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T10:18:05.434+05:30  INFO 39900 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-11-02T10:18:05.440+05:30  INFO 39900 --- [main] c.a.AttendEaseBackendApplication         : Started AttendEaseBackendApplication in 5.174 seconds (process running for 5.484)
+2026-11-02T10:22:56.019+05:30  INFO 23732 --- [main] c.attendease.RegistrationControllerTest  : Starting RegistrationControllerTest using Java 17.0.11 with PID 23732 (started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T10:22:56.021+05:30  INFO 23732 --- [main] c.attendease.RegistrationControllerTest  : The following 1 profile is active: "local"
+2026-11-02T10:22:57.090+05:30  WARN 23732 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: be26d4c9-3011-4f52-b510-dfd30c7ac23b
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T10:22:57.104+05:30  INFO 23732 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T10:22:57.679+05:30  INFO 23732 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-02T10:22:57.679+05:30  INFO 23732 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-02T10:22:57.681+05:30  INFO 23732 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-11-02T10:22:57.712+05:30  INFO 23732 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.184 seconds (process running for 5.327)
+2026-11-02T10:23:35.345+05:30  INFO 39900 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-02T10:23:35.347+05:30  INFO 39900 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-02T10:23:35.350+05:30  INFO 39900 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-11-02T10:23:35.627+05:30  INFO 39900 --- [http-nio-8080-exec-3] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@gmail.com
+2026-11-02T10:23:35.628+05:30  INFO 39900 --- [http-nio-8080-exec-3] com.attendease.service.AuthService       : Attempting login for email=admin@gmail.com
+2026-11-02T10:23:35.691+05:30  WARN 39900 --- [http-nio-8080-exec-3] com.attendease.service.AuthService       : No user found in users table for email=admin@gmail.com during login; checking legacy user_registration table
+2026-11-02T10:23:35.699+05:30  WARN 39900 --- [http-nio-8080-exec-3] com.attendease.service.AuthService       : No user found for email=admin@gmail.com during login
+2026-11-02T10:23:35.702+05:30  WARN 39900 --- [http-nio-8080-exec-3] c.attendease.controller.AuthController   : Login failed for email=admin@gmail.com with message=Invalid email or password
+2026-11-02T10:24:44.515+05:30  INFO 39900 --- [http-nio-8080-exec-10] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@example.com
+2026-11-02T10:24:44.516+05:30  INFO 39900 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : Attempting login for email=admin@example.com
+2026-11-02T10:24:44.523+05:30  WARN 39900 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : No user found in users table for email=admin@example.com during login; checking legacy user_registration table
+2026-11-02T10:24:44.526+05:30  WARN 39900 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : No user found for email=admin@example.com during login
+2026-11-02T10:24:44.527+05:30  WARN 39900 --- [http-nio-8080-exec-10] c.attendease.controller.AuthController   : Login failed for email=admin@example.com with message=Invalid email or password
+2026-11-02T10:25:01.112+05:30  INFO 39900 --- [http-nio-8080-exec-8] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@example.com
+2026-11-02T10:25:01.112+05:30  INFO 39900 --- [http-nio-8080-exec-8] com.attendease.service.AuthService       : Attempting login for email=admin@example.com
+2026-11-02T10:25:01.116+05:30  WARN 39900 --- [http-nio-8080-exec-8] com.attendease.service.AuthService       : No user found in users table for email=admin@example.com during login; checking legacy user_registration table
+2026-11-02T10:25:01.119+05:30  WARN 39900 --- [http-nio-8080-exec-8] com.attendease.service.AuthService       : No user found for email=admin@example.com during login
+2026-11-02T10:25:01.120+05:30  WARN 39900 --- [http-nio-8080-exec-8] c.attendease.controller.AuthController   : Login failed for email=admin@example.com with message=Invalid email or password
+2026-11-02T10:25:17.805+05:30  INFO 39900 --- [http-nio-8080-exec-9] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@example.com
+2026-11-02T10:25:17.805+05:30  INFO 39900 --- [http-nio-8080-exec-9] com.attendease.service.AuthService       : Attempting login for email=admin@example.com
+2026-11-02T10:25:17.815+05:30  WARN 39900 --- [http-nio-8080-exec-9] com.attendease.service.AuthService       : No user found in users table for email=admin@example.com during login; checking legacy user_registration table
+2026-11-02T10:25:17.823+05:30  WARN 39900 --- [http-nio-8080-exec-9] com.attendease.service.AuthService       : No user found for email=admin@example.com during login
+2026-11-02T10:25:17.824+05:30  WARN 39900 --- [http-nio-8080-exec-9] c.attendease.controller.AuthController   : Login failed for email=admin@example.com with message=Invalid email or password
+2026-11-02T10:25:29.667+05:30  INFO 39900 --- [http-nio-8080-exec-1] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@example.com
+2026-11-02T10:25:29.668+05:30  INFO 39900 --- [http-nio-8080-exec-1] com.attendease.service.AuthService       : Attempting login for email=admin@example.com
+2026-11-02T10:25:29.674+05:30  WARN 39900 --- [http-nio-8080-exec-1] com.attendease.service.AuthService       : No user found in users table for email=admin@example.com during login; checking legacy user_registration table
+2026-11-02T10:25:29.683+05:30  WARN 39900 --- [http-nio-8080-exec-1] com.attendease.service.AuthService       : No user found for email=admin@example.com during login
+2026-11-02T10:25:29.684+05:30  WARN 39900 --- [http-nio-8080-exec-1] c.attendease.controller.AuthController   : Login failed for email=admin@example.com with message=Invalid email or password
+2026-11-02T10:29:25.975+05:30  INFO 39900 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-02T10:29:25.981+05:30  INFO 39900 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-11-02T10:29:25.983+05:30  INFO 39900 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-11-02T10:29:53.027+05:30  INFO 15176 --- [main] c.attendease.RegistrationControllerTest  : Starting RegistrationControllerTest using Java 17.0.11 with PID 15176 (started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T10:29:53.028+05:30  INFO 15176 --- [main] c.attendease.RegistrationControllerTest  : The following 1 profile is active: "local"
+2026-11-02T10:29:54.217+05:30  WARN 15176 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 0227f18d-6879-4803-8cb8-2c8e44b49fd8
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T10:29:54.241+05:30  INFO 15176 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T10:29:54.874+05:30  INFO 15176 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-02T10:29:54.874+05:30  INFO 15176 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-02T10:29:54.876+05:30  INFO 15176 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-11-02T10:29:54.909+05:30  INFO 15176 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.365 seconds (process running for 5.416)
+2026-11-02T10:30:21.349+05:30  INFO 39888 --- [main] c.a.AttendEaseBackendApplication         : Starting AttendEaseBackendApplication using Java 17.0.11 with PID 39888 (C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\target\classes started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T10:30:21.353+05:30  INFO 39888 --- [main] c.a.AttendEaseBackendApplication         : The following 1 profile is active: "local"
+2026-11-02T10:30:21.993+05:30  INFO 39888 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-02T10:30:22.068+05:30  INFO 39888 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 67 ms. Found 5 JPA repository interfaces.
+2026-11-02T10:30:22.704+05:30  INFO 39888 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-11-02T10:30:22.716+05:30  INFO 39888 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-02T10:30:22.716+05:30  INFO 39888 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-11-02T10:30:22.789+05:30  INFO 39888 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-02T10:30:22.790+05:30  INFO 39888 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1390 ms
+2026-11-02T10:30:22.826+05:30  INFO 39888 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-02T10:30:23.018+05:30  INFO 39888 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:attendease_local user=SA
+2026-11-02T10:30:23.021+05:30  INFO 39888 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-02T10:30:23.033+05:30  INFO 39888 --- [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:attendease_local'
+2026-11-02T10:30:23.166+05:30  INFO 39888 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-02T10:30:23.243+05:30  INFO 39888 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-11-02T10:30:23.286+05:30  INFO 39888 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-11-02T10:30:23.602+05:30  INFO 39888 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-02T10:30:24.657+05:30  INFO 39888 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-02T10:30:24.741+05:30  INFO 39888 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-02T10:30:25.452+05:30  INFO 39888 --- [main] com.attendease.service.AdminService      : Created initial attendance location from application configuration
+2026-11-02T10:30:25.548+05:30  WARN 39888 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-11-02T10:30:25.571+05:30  WARN 39888 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 7637682f-1a50-4c64-a621-b155dfbc9581
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T10:30:25.587+05:30  INFO 39888 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T10:30:26.085+05:30  INFO 39888 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-11-02T10:30:26.091+05:30  INFO 39888 --- [main] c.a.AttendEaseBackendApplication         : Started AttendEaseBackendApplication in 5.2 seconds (process running for 5.509)
+2026-11-02T10:30:26.371+05:30  INFO 39888 --- [main] c.a.config.AdminAccountInitializer       : Configured administrator account is available for admin@google.com
+2026-11-02T10:30:47.158+05:30  INFO 39888 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-02T10:30:47.159+05:30  INFO 39888 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-02T10:30:47.161+05:30  INFO 39888 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-11-02T10:30:47.521+05:30  INFO 39888 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T10:30:47.523+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T10:30:47.536+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T10:30:47.677+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T10:30:47.678+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Password validation succeeded for email=admin@google.com using id=1
+2026-11-02T10:30:47.786+05:30  INFO 39888 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : Login successful for email=admin@google.com, role=ADMIN
+2026-11-02T11:47:57.583+05:30  WARN 39888 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h16m4s423ms342탎100ns).
+2026-11-02T11:51:55.448+05:30  WARN 39888 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m4s432ms473탎700ns).
+2026-11-02T11:52:17.780+05:30  INFO 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.con
+2026-11-02T11:52:17.780+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Attempting login for email=admin@google.con
+2026-11-02T11:52:17.785+05:30  WARN 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : No user found in users table for email=admin@google.con during login; checking legacy user_registration table
+2026-11-02T11:52:17.789+05:30  WARN 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : No user found for email=admin@google.con during login
+2026-11-02T11:52:17.789+05:30  WARN 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : Login failed for email=admin@google.con with message=Invalid email or password
+2026-11-02T11:52:24.387+05:30  INFO 39888 --- [http-nio-8080-exec-10] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T11:52:24.388+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T11:52:24.392+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T11:52:24.483+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T11:52:24.485+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : Password validation succeeded for email=admin@google.com using id=1
+2026-11-02T11:52:24.485+05:30  INFO 39888 --- [http-nio-8080-exec-10] c.attendease.controller.AuthController   : Login successful for email=admin@google.com, role=ADMIN
+2026-11-02T11:53:52.967+05:30  INFO 39888 --- [http-nio-8080-exec-7] c.attendease.controller.AuthController   : POST /api/auth/login called for email=sham@gmail.com
+2026-11-02T11:53:52.968+05:30  INFO 39888 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Attempting login for email=sham@gmail.com
+2026-11-02T11:53:52.973+05:30  INFO 39888 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : User found for login: id=2, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T11:53:53.148+05:30  INFO 39888 --- [http-nio-8080-exec-7] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T11:53:53.148+05:30  WARN 39888 --- [http-nio-8080-exec-7] c.attendease.controller.AuthController   : Login failed for email=sham@gmail.com with message=Your registration is awaiting administrator approval
+2026-11-02T11:54:16.851+05:30  INFO 39888 --- [http-nio-8080-exec-5] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@gmail.com
+2026-11-02T11:54:16.852+05:30  INFO 39888 --- [http-nio-8080-exec-5] com.attendease.service.AuthService       : Attempting login for email=admin@gmail.com
+2026-11-02T11:54:16.858+05:30  WARN 39888 --- [http-nio-8080-exec-5] com.attendease.service.AuthService       : No user found in users table for email=admin@gmail.com during login; checking legacy user_registration table
+2026-11-02T11:54:16.863+05:30  WARN 39888 --- [http-nio-8080-exec-5] com.attendease.service.AuthService       : No user found for email=admin@gmail.com during login
+2026-11-02T11:54:16.863+05:30  WARN 39888 --- [http-nio-8080-exec-5] c.attendease.controller.AuthController   : Login failed for email=admin@gmail.com with message=Invalid email or password
+2026-11-02T11:54:23.166+05:30  INFO 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T11:54:23.167+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T11:54:23.181+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T11:54:23.375+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T11:54:23.377+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Password validation succeeded for email=admin@google.com using id=1
+2026-11-02T11:54:23.377+05:30  INFO 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : Login successful for email=admin@google.com, role=ADMIN
+2026-11-02T11:54:30.737+05:30  INFO 39888 --- [http-nio-8080-exec-7] com.attendease.service.AdminService      : Admin admin@google.com approved registration for userId=2
+2026-11-02T11:54:43.734+05:30  INFO 39888 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : POST /api/auth/login called for email=sham@gmail.com
+2026-11-02T11:54:43.735+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Attempting login for email=sham@gmail.com
+2026-11-02T11:54:43.744+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : User found for login: id=2, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T11:54:43.958+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T11:54:43.959+05:30  INFO 39888 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Password validation succeeded for email=sham@gmail.com using id=2
+2026-11-02T11:54:43.960+05:30  INFO 39888 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : Login successful for email=sham@gmail.com, role=USER
+2026-11-02T11:58:07.357+05:30  INFO 39888 --- [http-nio-8080-exec-3] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@gmail.com
+2026-11-02T11:58:07.357+05:30  INFO 39888 --- [http-nio-8080-exec-3] com.attendease.service.AuthService       : Attempting login for email=admin@gmail.com
+2026-11-02T11:58:07.361+05:30  WARN 39888 --- [http-nio-8080-exec-3] com.attendease.service.AuthService       : No user found in users table for email=admin@gmail.com during login; checking legacy user_registration table
+2026-11-02T11:58:07.370+05:30  WARN 39888 --- [http-nio-8080-exec-3] com.attendease.service.AuthService       : No user found for email=admin@gmail.com during login
+2026-11-02T11:58:07.370+05:30  WARN 39888 --- [http-nio-8080-exec-3] c.attendease.controller.AuthController   : Login failed for email=admin@gmail.com with message=Invalid email or password
+2026-11-02T11:58:15.010+05:30  INFO 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T11:58:15.011+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T11:58:15.017+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T11:58:15.167+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T11:58:15.167+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Password validation succeeded for email=admin@google.com using id=1
+2026-11-02T11:58:15.167+05:30  INFO 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : Login successful for email=admin@google.com, role=ADMIN
+2026-11-02T11:59:44.099+05:30  INFO 39888 --- [http-nio-8080-exec-6] com.attendease.service.AdminService      : Admin admin@google.com updated attendance location id=1
+2026-11-02T12:07:35.450+05:30  INFO 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : POST /api/auth/login called for email=kisan@gmail.com
+2026-11-02T12:07:35.452+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Attempting login for email=kisan@gmail.com
+2026-11-02T12:07:35.457+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : User found for login: id=3, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T12:07:35.618+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T12:07:35.619+05:30  WARN 39888 --- [http-nio-8080-exec-2] c.attendease.controller.AuthController   : Login failed for email=kisan@gmail.com with message=Your registration is awaiting administrator approval
+2026-11-02T12:08:00.769+05:30  INFO 39888 --- [http-nio-8080-exec-9] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T12:08:00.771+05:30  INFO 39888 --- [http-nio-8080-exec-9] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T12:08:00.780+05:30  INFO 39888 --- [http-nio-8080-exec-9] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T12:08:00.971+05:30  WARN 39888 --- [http-nio-8080-exec-9] com.attendease.service.AuthService       : Password mismatch for userId=1, email=admin@google.com, rawPasswordProvided=true 
+2026-11-02T12:08:00.971+05:30  WARN 39888 --- [http-nio-8080-exec-9] c.attendease.controller.AuthController   : Login failed for email=admin@google.com with message=Invalid email or password
+2026-11-02T12:08:14.513+05:30  INFO 39888 --- [http-nio-8080-exec-10] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T12:08:14.515+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T12:08:14.519+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T12:08:14.649+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T12:08:14.650+05:30  INFO 39888 --- [http-nio-8080-exec-10] com.attendease.service.AuthService       : Password validation succeeded for email=admin@google.com using id=1
+2026-11-02T12:08:14.650+05:30  INFO 39888 --- [http-nio-8080-exec-10] c.attendease.controller.AuthController   : Login successful for email=admin@google.com, role=ADMIN
+2026-11-02T12:08:23.328+05:30  INFO 39888 --- [http-nio-8080-exec-2] com.attendease.service.AdminService      : Admin admin@google.com approved registration for userId=3
+2026-11-02T12:10:47.523+05:30  WARN 39888 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=51s721ms799탎500ns).
+2026-11-02T13:04:11.831+05:30  WARN 39888 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=53m24s308ms525탎700ns).
+2026-11-02T13:14:52.408+05:30  INFO 17032 --- [main] c.attendease.RegistrationControllerTest  : Starting RegistrationControllerTest using Java 17.0.11 with PID 17032 (started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T13:14:52.409+05:30  INFO 17032 --- [main] c.attendease.RegistrationControllerTest  : The following 1 profile is active: "local"
+2026-11-02T13:14:53.346+05:30  WARN 17032 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 68d7a728-f5b2-405f-98aa-9c87b79d04bb
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T13:14:53.359+05:30  INFO 17032 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T13:14:53.900+05:30  INFO 17032 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-02T13:14:53.900+05:30  INFO 17032 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-02T13:14:53.902+05:30  INFO 17032 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-11-02T13:14:53.927+05:30  INFO 17032 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.031 seconds (process running for 4.946)
+2026-11-02T13:15:27.260+05:30  INFO 22172 --- [main] c.a.AttendEaseBackendApplication         : Starting AttendEaseBackendApplication using Java 17.0.11 with PID 22172 (C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\target\classes started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T13:15:27.263+05:30  INFO 22172 --- [main] c.a.AttendEaseBackendApplication         : The following 1 profile is active: "local"
+2026-11-02T13:15:27.905+05:30  INFO 22172 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-02T13:15:27.973+05:30  INFO 22172 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 60 ms. Found 5 JPA repository interfaces.
+2026-11-02T13:15:28.613+05:30  INFO 22172 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-11-02T13:15:28.626+05:30  INFO 22172 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-02T13:15:28.627+05:30  INFO 22172 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-11-02T13:15:28.701+05:30  INFO 22172 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-02T13:15:28.701+05:30  INFO 22172 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1386 ms
+2026-11-02T13:15:28.732+05:30  INFO 22172 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-02T13:15:28.924+05:30  INFO 22172 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:attendease_local user=SA
+2026-11-02T13:15:28.926+05:30  INFO 22172 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-02T13:15:28.938+05:30  INFO 22172 --- [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:attendease_local'
+2026-11-02T13:15:29.088+05:30  INFO 22172 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-02T13:15:29.194+05:30  INFO 22172 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-11-02T13:15:29.232+05:30  INFO 22172 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-11-02T13:15:29.519+05:30  INFO 22172 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-02T13:15:30.582+05:30  INFO 22172 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-02T13:15:30.663+05:30  INFO 22172 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-02T13:15:31.352+05:30  INFO 22172 --- [main] com.attendease.service.AdminService      : Created initial attendance location from application configuration
+2026-11-02T13:15:31.415+05:30  WARN 22172 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-11-02T13:15:31.430+05:30  WARN 22172 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: d0f8496f-9f55-4b66-9b4b-4dcac2c4675e
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T13:15:31.437+05:30  INFO 22172 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T13:15:31.880+05:30  INFO 22172 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-11-02T13:15:31.887+05:30  INFO 22172 --- [main] c.a.AttendEaseBackendApplication         : Started AttendEaseBackendApplication in 5.071 seconds (process running for 5.366)
+2026-11-02T13:15:57.314+05:30  INFO 22172 --- [http-nio-8080-exec-5] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-02T13:15:57.315+05:30  INFO 22172 --- [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-02T13:15:57.317+05:30  INFO 22172 --- [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-11-02T13:15:57.681+05:30  INFO 22172 --- [http-nio-8080-exec-6] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T13:15:57.683+05:30  INFO 22172 --- [http-nio-8080-exec-6] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T13:15:57.785+05:30  WARN 22172 --- [http-nio-8080-exec-6] com.attendease.service.AuthService       : No user found in users table for email=admin@google.com during login; checking legacy user_registration table
+2026-11-02T13:15:57.794+05:30  WARN 22172 --- [http-nio-8080-exec-6] com.attendease.service.AuthService       : No user found for email=admin@google.com during login
+2026-11-02T13:15:57.796+05:30  WARN 22172 --- [http-nio-8080-exec-6] c.attendease.controller.AuthController   : Login failed for email=admin@google.com with message=Invalid email or password
+2026-11-02T13:16:07.369+05:30  INFO 22172 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@google.com
+2026-11-02T13:16:07.369+05:30  INFO 22172 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Attempting login for email=admin@google.com
+2026-11-02T13:16:07.375+05:30  WARN 22172 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : No user found in users table for email=admin@google.com during login; checking legacy user_registration table
+2026-11-02T13:16:07.381+05:30  WARN 22172 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : No user found for email=admin@google.com during login
+2026-11-02T13:16:07.382+05:30  WARN 22172 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : Login failed for email=admin@google.com with message=Invalid email or password
+2026-11-02T13:17:20.637+05:30  INFO 2236 --- [main] c.a.AttendEaseBackendApplication         : Starting AttendEaseBackendApplication using Java 17.0.11 with PID 2236 (C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\target\classes started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-02T13:17:20.640+05:30  INFO 2236 --- [main] c.a.AttendEaseBackendApplication         : The following 1 profile is active: "local"
+2026-11-02T13:17:21.276+05:30  INFO 2236 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-02T13:17:21.345+05:30  INFO 2236 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 62 ms. Found 5 JPA repository interfaces.
+2026-11-02T13:17:21.992+05:30  INFO 2236 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-11-02T13:17:22.009+05:30  INFO 2236 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-02T13:17:22.009+05:30  INFO 2236 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-11-02T13:17:22.081+05:30  INFO 2236 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-02T13:17:22.082+05:30  INFO 2236 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1398 ms
+2026-11-02T13:17:22.126+05:30  INFO 2236 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-02T13:17:22.294+05:30  INFO 2236 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:attendease_local user=SA
+2026-11-02T13:17:22.296+05:30  INFO 2236 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-02T13:17:22.308+05:30  INFO 2236 --- [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:attendease_local'
+2026-11-02T13:17:22.462+05:30  INFO 2236 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-02T13:17:22.532+05:30  INFO 2236 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-11-02T13:17:22.574+05:30  INFO 2236 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-11-02T13:17:22.883+05:30  INFO 2236 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-02T13:17:23.901+05:30  INFO 2236 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-02T13:17:23.978+05:30  INFO 2236 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-02T13:17:24.654+05:30  INFO 2236 --- [main] com.attendease.service.AdminService      : Created initial attendance location from application configuration
+2026-11-02T13:17:24.726+05:30  WARN 2236 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-11-02T13:17:24.744+05:30  WARN 2236 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 7b88890b-29cc-4079-ae2f-48e7ac65e2ce
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-02T13:17:24.752+05:30  INFO 2236 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-02T13:17:25.256+05:30  INFO 2236 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-11-02T13:17:25.275+05:30  INFO 2236 --- [main] c.a.AttendEaseBackendApplication         : Started AttendEaseBackendApplication in 5.142 seconds (process running for 5.457)
+2026-11-02T13:17:25.578+05:30  INFO 2236 --- [main] c.a.config.AdminAccountInitializer       : Configured administrator account is available for admin@example.com
+2026-11-02T13:18:03.939+05:30  INFO 2236 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-02T13:18:03.940+05:30  INFO 2236 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-02T13:18:03.942+05:30  INFO 2236 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-11-02T13:18:04.287+05:30  INFO 2236 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : POST /api/auth/login called for email=admin@example.com
+2026-11-02T13:18:04.288+05:30  INFO 2236 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Attempting login for email=admin@example.com
+2026-11-02T13:18:04.298+05:30  INFO 2236 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : User found for login: id=1, storedPasswordStartsWithBcrypt=true, storedPasswordLength=60
+2026-11-02T13:18:04.471+05:30  INFO 2236 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Password matched using BCrypt encoder
+2026-11-02T13:18:04.473+05:30  INFO 2236 --- [http-nio-8080-exec-4] com.attendease.service.AuthService       : Password validation succeeded for email=admin@example.com using id=1
+2026-11-02T13:18:04.583+05:30  WARN 2236 --- [http-nio-8080-exec-4] o.a.c.util.SessionIdGeneratorBase        : Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [101] milliseconds.
+2026-11-02T13:18:04.588+05:30  INFO 2236 --- [http-nio-8080-exec-4] c.attendease.controller.AuthController   : Login successful for email=admin@example.com, role=ADMIN

@@ -5,9 +5,11 @@ import com.attendease.dto.AttendanceRequest;
 import com.attendease.dto.AttendanceResponse;
 import com.attendease.dto.UserSummary;
 import com.attendease.entity.AdminActivityLog;
+import com.attendease.entity.AttendanceLocation;
 import com.attendease.entity.AttendanceRecord;
 import com.attendease.entity.User;
 import com.attendease.repository.AdminActivityLogRepository;
+import com.attendease.repository.AttendanceLocationRepository;
 import com.attendease.repository.AttendanceRecordRepository;
 import com.attendease.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,7 @@ import java.util.List;
 public class AttendanceService {
 
     private final AttendanceRecordRepository attendanceRecordRepository;
+    private final AttendanceLocationRepository attendanceLocationRepository;
     private final UserRepository userRepository;
     private final AdminActivityLogRepository adminActivityLogRepository;
 
@@ -36,9 +39,11 @@ public class AttendanceService {
     private int radiusMeters;
 
     public AttendanceService(AttendanceRecordRepository attendanceRecordRepository,
+                             AttendanceLocationRepository attendanceLocationRepository,
                              UserRepository userRepository,
                              AdminActivityLogRepository adminActivityLogRepository) {
         this.attendanceRecordRepository = attendanceRecordRepository;
+        this.attendanceLocationRepository = attendanceLocationRepository;
         this.userRepository = userRepository;
         this.adminActivityLogRepository = adminActivityLogRepository;
     }
@@ -46,12 +51,15 @@ public class AttendanceService {
     public AttendanceResponse markAttendance(AttendanceRequest request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("User account is awaiting administrator approval");
+        }
 
         if (request.getLatitude() == null || request.getLongitude() == null) {
             throw new IllegalArgumentException("Location is required");
         }
 
-        boolean locationVerified = isWithinCompanyRadius(request.getLatitude(), request.getLongitude());
+        boolean locationVerified = isWithinConfiguredRadius(request.getLatitude(), request.getLongitude());
         boolean faceVerified = request.getFaceImageBase64() != null && !request.getFaceImageBase64().isBlank();
 
         if (!locationVerified) {
@@ -126,7 +134,7 @@ public class AttendanceService {
         List<User> users = userRepository.findAll();
         List<UserSummary> result = new ArrayList<>();
         for (User user : users) {
-            result.add(new UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.isActive()));
+            result.add(new UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.getProfileImage(), user.isActive()));
         }
         return result;
     }
@@ -146,17 +154,30 @@ public class AttendanceService {
         return new AdminSummary(totalUsers, totalPresent, totalLate, totalAbsent);
     }
 
-    private boolean isWithinCompanyRadius(double latitude, double longitude) {
+    private boolean isWithinConfiguredRadius(double latitude, double longitude) {
+        List<AttendanceLocation> activeLocations = attendanceLocationRepository.findAllByActiveTrue();
+        if (!activeLocations.isEmpty()) {
+            return activeLocations.stream().anyMatch(location -> isWithinRadius(
+                    latitude, longitude, location.getLatitude(), location.getLongitude(), location.getRadiusMeters()));
+        }
+        if (attendanceLocationRepository.count() > 0) {
+            return false;
+        }
+        return isWithinRadius(latitude, longitude, companyLatitude, companyLongitude, radiusMeters);
+    }
+
+    private boolean isWithinRadius(double latitude, double longitude, double centerLatitude,
+                                   double centerLongitude, int allowedRadiusMeters) {
         double earthRadius = 6371000;
-        double dLat = Math.toRadians(latitude - companyLatitude);
-        double dLng = Math.toRadians(longitude - companyLongitude);
+        double dLat = Math.toRadians(latitude - centerLatitude);
+        double dLng = Math.toRadians(longitude - centerLongitude);
 
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(companyLatitude)) * Math.cos(Math.toRadians(latitude))
+                + Math.cos(Math.toRadians(centerLatitude)) * Math.cos(Math.toRadians(latitude))
                 * Math.sin(dLng / 2) * Math.sin(dLng / 2);
 
         double distance = 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return distance <= radiusMeters;
+        return distance <= allowedRadiusMeters;
     }
 
     private void saveActivity(Long userId, String action, String details) {

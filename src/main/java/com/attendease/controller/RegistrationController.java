@@ -2,6 +2,7 @@ package com.attendease.controller;
 
 import com.attendease.dto.ApiResponse;
 import com.attendease.dto.RegisterRequest;
+import com.attendease.dto.UserSummary;
 import com.attendease.entity.UserRegistration;
 import com.attendease.service.RegistrationService;
 import jakarta.validation.Valid;
@@ -39,7 +40,14 @@ public class RegistrationController {
     }
 
     @GetMapping("/registrations")
-    public List<UserRegistration> getAllRegistrations() {
-        return registrationService.getAllRegistrations();
+    public List<UserSummary> getAllRegistrations() {
+        return registrationService.getAllRegistrations().stream()
+                .map(registration -> {
+                    UserSummary summary = new UserSummary(registration.getId(), registration.getFullName(),
+                            registration.getEmail(), "USER", null, false, registration.getCreatedAt());
+                    summary.setSource("LEGACY");
+                    return summary;
+                })
+                .toList();
     }
 }

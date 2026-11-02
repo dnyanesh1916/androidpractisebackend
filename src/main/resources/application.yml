@@ -1,8 +1,21 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:prod}
-    # active: ${SPRING_PROFILES_ACTIVE:local}
+    # active: ${SPRING_PROFILES_ACTIVE:prod}
+    active: ${SPRING_PROFILES_ACTIVE:local}
 
 
 server:
   port: ${PORT:8080}
+
+logging:
+  file:
+    name: ${LOG_FILE:logs/attendease.log}
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 14
+
+attendease:
+  admin:
+    email: ${ATTENDEASE_ADMIN_EMAIL:}
+    password: ${ATTENDEASE_ADMIN_PASSWORD:}
