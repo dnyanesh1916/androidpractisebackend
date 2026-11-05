@@ -149,6 +149,16 @@ public class AdminService {
         if (!user.isActive()) {
             throw new IllegalArgumentException("Approve the user before recording compensation transactions");
         }
+        if (user.getDailySalary() == null) {
+            throw new IllegalArgumentException("Set a daily salary before recording a salary payment or advance");
+        }
+        YearMonth currentMonth = YearMonth.now();
+        LocalDateTime monthStart = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime nextMonthStart = currentMonth.plusMonths(1).atDay(1).atStartOfDay();
+        if (!attendanceRecordRepository.existsByUserIdAndCheckInTimeBetween(
+                userId, monthStart, nextMonthStart.minusNanos(1))) {
+            throw new IllegalArgumentException("Mark attendance at least once this month before recording a salary payment or advance");
+        }
         User admin = userRepository.findByEmail(adminEmail)
                 .orElseThrow(() -> new IllegalStateException("Authenticated administrator was not found"));
         CompensationTransaction transaction = new CompensationTransaction();

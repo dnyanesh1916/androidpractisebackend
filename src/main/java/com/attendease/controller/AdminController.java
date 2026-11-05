@@ -5,8 +5,10 @@ import com.attendease.dto.AttendanceLocationRequest;
 import com.attendease.dto.CompensationTransactionRequest;
 import com.attendease.dto.SalaryUpdateRequest;
 import com.attendease.dto.UserApprovalRequest;
+import com.attendease.dto.UserAttendanceSummary;
 import com.attendease.dto.UserSummary;
 import com.attendease.entity.AdminActivityLog;
+import com.attendease.entity.AttendanceRecord;
 import com.attendease.entity.AttendanceLocation;
 import com.attendease.entity.CompensationTransaction;
 import com.attendease.service.AdminService;
@@ -87,6 +89,14 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getTransactions(userId));
     }
 
+    @GetMapping("/users/{userId}/attendance")
+    public ResponseEntity<List<UserAttendanceSummary>> getUserAttendance(@PathVariable Long userId) {
+        List<UserAttendanceSummary> attendance = attendanceService.getUserAttendance(userId).stream()
+                .map(this::toAttendanceSummary)
+                .toList();
+        return ResponseEntity.ok(attendance);
+    }
+
     @PostMapping("/users/{userId}/transactions")
     public ResponseEntity<CompensationTransaction> addUserTransaction(@PathVariable Long userId,
                                                                       @Valid @RequestBody CompensationTransactionRequest request,
@@ -133,5 +143,13 @@ public class AdminController {
                 .map(error -> error.getDefaultMessage())
                 .orElse("Invalid request");
         return Map.of("message", message);
+    }
+
+    private UserAttendanceSummary toAttendanceSummary(AttendanceRecord record) {
+        return new UserAttendanceSummary(
+                record.getId(),
+                record.getStatus(),
+                record.getCheckInTime(),
+                record.getCheckOutTime());
     }
 }

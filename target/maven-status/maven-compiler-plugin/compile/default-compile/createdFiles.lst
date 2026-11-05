@@ -36,4 +36,5 @@ com\attendease\entity\AdminActivityLog.class
 com\attendease\entity\AttendanceLocation.class
 com\attendease\service\AuthService.class
 com\attendease\dto\CompensationTransactionRequest.class
+com\attendease\dto\UserAttendanceSummary.class
 com\attendease\dto\RegisterRequest.class

@@ -33,6 +33,8 @@ public class AdminAccountInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         if (adminEmail == null || adminEmail.isBlank() || adminPassword == null || adminPassword.isBlank()) {
+            logger.warn("Admin bootstrap credentials are not configured. Set ATTENDEASE_ADMIN_EMAIL and "
+                    + "ATTENDEASE_ADMIN_PASSWORD to create or synchronize an administrator account.");
             return;
         }
 
