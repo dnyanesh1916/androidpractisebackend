@@ -2,11 +2,13 @@ package com.attendease.controller;
 
 import com.attendease.dto.AdminSummary;
 import com.attendease.dto.AttendanceLocationRequest;
+import com.attendease.dto.CompensationTransactionRequest;
 import com.attendease.dto.SalaryUpdateRequest;
 import com.attendease.dto.UserApprovalRequest;
 import com.attendease.dto.UserSummary;
 import com.attendease.entity.AdminActivityLog;
 import com.attendease.entity.AttendanceLocation;
+import com.attendease.entity.CompensationTransaction;
 import com.attendease.service.AdminService;
 import com.attendease.service.AttendanceService;
 import jakarta.validation.Valid;
@@ -70,7 +72,7 @@ public class AdminController {
                                                    @Valid @RequestBody(required = false) UserApprovalRequest request,
                                                    @AuthenticationPrincipal String adminEmail) {
         return ResponseEntity.ok(adminService.approveUser(userId, source, adminEmail,
-                request == null ? null : request.getMonthlySalary()));
+            request == null ? null : request.getDailySalary()));
     }
 
     @PatchMapping("/users/{userId}/salary")
@@ -78,6 +80,19 @@ public class AdminController {
                                                     @Valid @RequestBody SalaryUpdateRequest request,
                                                     @AuthenticationPrincipal String adminEmail) {
         return ResponseEntity.ok(adminService.updateSalary(userId, request, adminEmail));
+    }
+
+    @GetMapping("/users/{userId}/transactions")
+    public ResponseEntity<List<CompensationTransaction>> getUserTransactions(@PathVariable Long userId) {
+        return ResponseEntity.ok(adminService.getTransactions(userId));
+    }
+
+    @PostMapping("/users/{userId}/transactions")
+    public ResponseEntity<CompensationTransaction> addUserTransaction(@PathVariable Long userId,
+                                                                      @Valid @RequestBody CompensationTransactionRequest request,
+                                                                      @AuthenticationPrincipal String adminEmail) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(adminService.addTransaction(userId, request, adminEmail));
     }
 
     @GetMapping("/locations")

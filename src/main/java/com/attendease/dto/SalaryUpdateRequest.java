@@ -8,16 +8,16 @@ import java.math.BigDecimal;
 
 public class SalaryUpdateRequest {
 
-    @NotNull(message = "Monthly salary is required")
-    @DecimalMin(value = "0.00", message = "Monthly salary cannot be negative")
-    @Digits(integer = 10, fraction = 2, message = "Monthly salary can have at most 2 decimal places")
-    private BigDecimal monthlySalary;
+    @NotNull(message = "Daily salary is required")
+    @DecimalMin(value = "0.00", message = "Daily salary cannot be negative")
+    @Digits(integer = 10, fraction = 2, message = "Daily salary can have at most 2 decimal places")
+    private BigDecimal dailySalary;
 
-    public BigDecimal getMonthlySalary() {
-        return monthlySalary;
+    public BigDecimal getDailySalary() {
+        return dailySalary;
     }
 
-    public void setMonthlySalary(BigDecimal monthlySalary) {
-        this.monthlySalary = monthlySalary;
+    public void setDailySalary(BigDecimal dailySalary) {
+        this.dailySalary = dailySalary;
     }
 }

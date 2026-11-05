@@ -9,6 +9,7 @@ com\attendease\controller\AdminController.class
 com\attendease\entity\Role.class
 com\attendease\config\SecurityConfig.class
 com\attendease\controller\RegistrationController.class
+com\attendease\entity\CompensationTransaction.class
 com\attendease\entity\User.class
 com\attendease\dto\UserSummary.class
 com\attendease\dto\AttendanceLocationRequest.class
@@ -23,13 +24,16 @@ com\attendease\entity\AttendanceRecord.class
 com\attendease\dto\ApiResponse.class
 com\attendease\dto\LoginRequest.class
 com\attendease\config\AdminAccountInitializer.class
+com\attendease\repository\CompensationTransactionRepository.class
 com\attendease\repository\AdminActivityLogRepository.class
 com\attendease\dto\AttendanceRequest.class
 com\attendease\config\DatabaseCheckConfig.class
 com\attendease\dto\AdminSummary.class
+com\attendease\entity\CompensationTransactionType.class
 com\attendease\repository\AttendanceLocationRepository.class
 com\attendease\controller\AttendanceController.class
 com\attendease\entity\AdminActivityLog.class
 com\attendease\entity\AttendanceLocation.class
 com\attendease\service\AuthService.class
+com\attendease\dto\CompensationTransactionRequest.class
 com\attendease\dto\RegisterRequest.class

@@ -1,16 +1,20 @@
 package com.attendease.service;
 
 import com.attendease.dto.AttendanceLocationRequest;
+import com.attendease.dto.CompensationTransactionRequest;
 import com.attendease.dto.SalaryUpdateRequest;
 import com.attendease.dto.UserSummary;
 import com.attendease.entity.AdminActivityLog;
 import com.attendease.entity.AttendanceLocation;
 import com.attendease.entity.AttendanceRecord;
+import com.attendease.entity.CompensationTransaction;
+import com.attendease.entity.CompensationTransactionType;
 import com.attendease.entity.Role;
 import com.attendease.entity.User;
 import com.attendease.entity.UserRegistration;
 import com.attendease.repository.AdminActivityLogRepository;
 import com.attendease.repository.AttendanceRecordRepository;
+import com.attendease.repository.CompensationTransactionRepository;
 import com.attendease.repository.AttendanceLocationRepository;
 import com.attendease.repository.UserRegistrationRepository;
 import com.attendease.repository.UserRepository;
@@ -32,6 +36,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.DayOfWeek;
 
 @Service
 public class AdminService {
@@ -43,6 +49,7 @@ public class AdminService {
     private final AttendanceLocationRepository locationRepository;
     private final AdminActivityLogRepository activityLogRepository;
     private final AttendanceRecordRepository attendanceRecordRepository;
+    private final CompensationTransactionRepository compensationTransactionRepository;
 
     @Value("${attendease.company.latitude:12.9716}")
     private double defaultLatitude;
@@ -57,12 +64,14 @@ public class AdminService {
                         UserRegistrationRepository legacyRegistrationRepository,
                         AttendanceLocationRepository locationRepository,
                         AdminActivityLogRepository activityLogRepository,
-                        AttendanceRecordRepository attendanceRecordRepository) {
+                        AttendanceRecordRepository attendanceRecordRepository,
+                        CompensationTransactionRepository compensationTransactionRepository) {
         this.userRepository = userRepository;
         this.legacyRegistrationRepository = legacyRegistrationRepository;
         this.locationRepository = locationRepository;
         this.activityLogRepository = activityLogRepository;
         this.attendanceRecordRepository = attendanceRecordRepository;
+        this.compensationTransactionRepository = compensationTransactionRepository;
     }
 
     @PostConstruct
@@ -92,15 +101,23 @@ public class AdminService {
         LocalDateTime start = selectedMonth.atDay(1).atStartOfDay();
         LocalDateTime end = selectedMonth.plusMonths(1).atDay(1).atStartOfDay().minusNanos(1);
         Map<Long, Set<LocalDate>> workedDates = new HashMap<>();
+        Map<Long, BigDecimal> advances = new HashMap<>();
+        Map<Long, BigDecimal> salaryPayments = new HashMap<>();
         for (AttendanceRecord record : attendanceRecordRepository.findByCheckInTimeBetweenOrderByCheckInTimeDesc(start, end)) {
             if (record.getCheckInTime() != null) {
                 workedDates.computeIfAbsent(record.getUserId(), ignored -> new HashSet<>())
                         .add(record.getCheckInTime().toLocalDate());
             }
         }
+            for (CompensationTransaction transaction : compensationTransactionRepository.findByCreatedAtBetweenOrderByCreatedAtDesc(start, end)) {
+                Map<Long, BigDecimal> totals = transaction.getType() == CompensationTransactionType.ADVANCE
+                    ? advances : salaryPayments;
+                totals.merge(transaction.getUserId(), transaction.getAmount(), BigDecimal::add);
+            }
 
         List<UserSummary> users = new ArrayList<>(userRepository.findAll().stream()
-                .map(user -> toSummary(user, workedDates.getOrDefault(user.getId(), Set.of()).size()))
+                .map(user -> toSummary(user, workedDates.getOrDefault(user.getId(), Set.of()).size(), selectedMonth,
+                    advances.get(user.getId()), salaryPayments.getOrDefault(user.getId(), BigDecimal.ZERO)))
                 .toList());
 
         legacyRegistrationRepository.findAll().stream()
@@ -113,6 +130,42 @@ public class AdminService {
         return users;
     }
 
+    @Transactional(readOnly = true)
+    public List<CompensationTransaction> getTransactions(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("User not found");
+        }
+        return compensationTransactionRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    @Transactional
+    public CompensationTransaction addTransaction(Long userId, CompensationTransactionRequest request,
+                                                  String adminEmail) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user.getRole() != Role.USER) {
+            throw new IllegalArgumentException("Compensation transactions can only be recorded for regular users");
+        }
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("Approve the user before recording compensation transactions");
+        }
+        User admin = userRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new IllegalStateException("Authenticated administrator was not found"));
+        CompensationTransaction transaction = new CompensationTransaction();
+        transaction.setUserId(user.getId());
+        transaction.setType(request.getType());
+        transaction.setAmount(request.getAmount());
+        transaction.setDescription(request.getDescription().trim());
+        transaction.setRecordedByEmail(admin.getEmail());
+        CompensationTransaction saved = compensationTransactionRepository.save(transaction);
+        String action = request.getType() == CompensationTransactionType.ADVANCE
+                ? "ADVANCE_RECORDED" : "SALARY_PAYMENT_RECORDED";
+        recordActivity(adminEmail, action, request.getType() + " of " + request.getAmount() + " for "
+            + user.getEmail() + ": " + request.getDescription().trim());
+        logger.info("Admin {} recorded compensation transaction id={} for userId={}", adminEmail, saved.getId(), userId);
+        return saved;
+    }
+
     @Transactional
     public UserSummary updateSalary(Long userId, SalaryUpdateRequest request, String adminEmail) {
         User user = userRepository.findById(userId)
@@ -120,17 +173,55 @@ public class AdminService {
         if (user.getRole() != Role.USER) {
             throw new IllegalArgumentException("Salary can only be assigned to regular user accounts");
         }
-        user.setMonthlySalary(request.getMonthlySalary());
+        user.setDailySalary(request.getDailySalary());
         User saved = userRepository.save(user);
-        recordActivity(adminEmail, "USER_SALARY_UPDATED", "Updated monthly salary for " + saved.getEmail());
-        logger.info("Admin {} updated monthly salary for userId={}", adminEmail, userId);
-        return toSummary(saved);
+        recordActivity(adminEmail, "USER_DAILY_SALARY_UPDATED", "Updated daily salary for " + saved.getEmail());
+        logger.info("Admin {} updated daily salary for userId={}", adminEmail, userId);
+        YearMonth currentMonth = YearMonth.now();
+        return getUserSummary(userId, currentMonth.getYear(), currentMonth.getMonthValue());
+    }
+
+    @Transactional(readOnly = true)
+    public UserSummary getUserSummary(Long userId, int year, int month) {
+        YearMonth selectedMonth;
+        try {
+            selectedMonth = YearMonth.of(year, month);
+        } catch (RuntimeException exception) {
+            throw new IllegalArgumentException("Select a valid year and month");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        LocalDateTime start = selectedMonth.atDay(1).atStartOfDay();
+        LocalDateTime end = selectedMonth.plusMonths(1).atDay(1).atStartOfDay().minusNanos(1);
+        Set<LocalDate> workedDates = new HashSet<>();
+        for (AttendanceRecord record : attendanceRecordRepository.findByUserIdOrderByCheckInTimeDesc(userId)) {
+            if (record.getCheckInTime() != null
+                    && !record.getCheckInTime().isBefore(start)
+                    && !record.getCheckInTime().isAfter(end)) {
+                workedDates.add(record.getCheckInTime().toLocalDate());
+            }
+        }
+        BigDecimal advance = null;
+        BigDecimal salaryPaid = BigDecimal.ZERO;
+        for (CompensationTransaction transaction : compensationTransactionRepository
+                .findByCreatedAtBetweenOrderByCreatedAtDesc(start, end)) {
+            if (!transaction.getUserId().equals(userId)) {
+                continue;
+            }
+            if (transaction.getType() == CompensationTransactionType.ADVANCE) {
+                advance = advance == null ? transaction.getAmount() : advance.add(transaction.getAmount());
+            } else {
+                salaryPaid = salaryPaid.add(transaction.getAmount());
+            }
+        }
+        return toSummary(user, workedDates.size(), selectedMonth, advance, salaryPaid);
     }
 
     @Transactional
-    public UserSummary approveUser(Long userId, String source, String adminEmail, BigDecimal monthlySalary) {
+    public UserSummary approveUser(Long userId, String source, String adminEmail, BigDecimal dailySalary) {
         if ("LEGACY".equalsIgnoreCase(source)) {
-            return approveLegacyUser(userId, adminEmail, monthlySalary);
+            return approveLegacyUser(userId, adminEmail, dailySalary);
         }
 
         User user = userRepository.findById(userId)
@@ -143,8 +234,8 @@ public class AdminService {
             user.setActive(true);
             changed = true;
         }
-        if (monthlySalary != null) {
-            user.setMonthlySalary(monthlySalary);
+        if (dailySalary != null) {
+            user.setDailySalary(dailySalary);
             changed = true;
         }
         if (changed) {
@@ -155,7 +246,7 @@ public class AdminService {
         return toSummary(user);
     }
 
-    private UserSummary approveLegacyUser(Long registrationId, String adminEmail, BigDecimal monthlySalary) {
+    private UserSummary approveLegacyUser(Long registrationId, String adminEmail, BigDecimal dailySalary) {
         UserRegistration registration = legacyRegistrationRepository.findById(registrationId)
                 .orElseThrow(() -> new IllegalArgumentException("Registration not found"));
         if (userRepository.existsByEmail(registration.getEmail())) {
@@ -168,7 +259,7 @@ public class AdminService {
         user.setPassword(registration.getPassword());
         user.setRole(Role.USER);
         user.setActive(true);
-        user.setMonthlySalary(monthlySalary);
+        user.setDailySalary(dailySalary);
         User saved = userRepository.save(user);
         legacyRegistrationRepository.delete(registration);
         recordActivity(adminEmail, "USER_APPROVED", "Approved legacy registration for " + saved.getEmail());
@@ -227,12 +318,31 @@ public class AdminService {
     }
 
     private UserSummary toSummary(User user) {
-        return toSummary(user, 0);
+        return toSummary(user, 0, YearMonth.now(), null, BigDecimal.ZERO);
     }
 
-    private UserSummary toSummary(User user, int workingDaysThisMonth) {
+    private UserSummary toSummary(User user, int workingDaysThisMonth, YearMonth selectedMonth,
+                                  BigDecimal advancesFromLedger, BigDecimal salaryPaid) {
+        int scheduledWorkingDays = countWeekdays(selectedMonth);
+        BigDecimal advance = advancesFromLedger != null ? advancesFromLedger
+                : user.getMonthlyAdvance() == null ? BigDecimal.ZERO : user.getMonthlyAdvance();
+        BigDecimal earnedPay = user.getDailySalary() == null ? null
+            : user.getDailySalary().multiply(BigDecimal.valueOf(workingDaysThisMonth))
+            .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalBalance = earnedPay == null ? null : earnedPay.subtract(advance);
         return new UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(),
-                user.getProfileImage(), user.isActive(), user.getCreatedAt(), user.getMonthlySalary(), workingDaysThisMonth);
+            user.getProfileImage(), user.isActive(), user.getCreatedAt(), user.getDailySalary(), advance,
+            workingDaysThisMonth, scheduledWorkingDays, salaryPaid, earnedPay, totalBalance);
+    }
+
+    private int countWeekdays(YearMonth month) {
+        int weekdays = 0;
+        for (LocalDate day = month.atDay(1); !day.isAfter(month.atEndOfMonth()); day = day.plusDays(1)) {
+            if (day.getDayOfWeek() != DayOfWeek.SATURDAY && day.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                weekdays++;
+            }
+        }
+        return weekdays;
     }
 
     private UserSummary toLegacySummary(UserRegistration registration) {

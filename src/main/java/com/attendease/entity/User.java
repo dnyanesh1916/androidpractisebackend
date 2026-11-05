@@ -34,8 +34,11 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String profileImage;
 
+    @Column(name = "daily_salary", precision = 12, scale = 2)
+    private BigDecimal dailySalary;
+
     @Column(precision = 12, scale = 2)
-    private BigDecimal monthlySalary;
+    private BigDecimal monthlyAdvance = BigDecimal.ZERO;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -101,12 +104,20 @@ public class User {
         this.profileImage = profileImage;
     }
 
-    public BigDecimal getMonthlySalary() {
-        return monthlySalary;
+    public BigDecimal getDailySalary() {
+        return dailySalary;
     }
 
-    public void setMonthlySalary(BigDecimal monthlySalary) {
-        this.monthlySalary = monthlySalary;
+    public void setDailySalary(BigDecimal dailySalary) {
+        this.dailySalary = dailySalary;
+    }
+
+    public BigDecimal getMonthlyAdvance() {
+        return monthlyAdvance;
+    }
+
+    public void setMonthlyAdvance(BigDecimal monthlyAdvance) {
+        this.monthlyAdvance = monthlyAdvance;
     }
 
     public LocalDateTime getCreatedAt() {

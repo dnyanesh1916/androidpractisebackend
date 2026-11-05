@@ -12,6 +12,7 @@ C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendeas
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\AttendanceRequest.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\AttendanceResponse.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\AuthResponse.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\CompensationTransactionRequest.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\LoginRequest.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\RegisterRequest.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\SalaryUpdateRequest.java
@@ -20,12 +21,15 @@ C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendeas
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\AdminActivityLog.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\AttendanceLocation.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\AttendanceRecord.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\CompensationTransaction.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\CompensationTransactionType.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\Role.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\User.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\entity\UserRegistration.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\repository\AdminActivityLogRepository.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\repository\AttendanceLocationRepository.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\repository\AttendanceRecordRepository.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\repository\CompensationTransactionRepository.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\repository\UserRegistrationRepository.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\repository\UserRepository.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\AdminService.java

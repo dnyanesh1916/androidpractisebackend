@@ -12,8 +12,13 @@ public class UserSummary {
     private boolean active;
     private LocalDateTime createdAt;
     private String source = "USER";
-    private BigDecimal monthlySalary;
+    private BigDecimal dailySalary;
+    private BigDecimal monthlyAdvance;
     private int workingDaysThisMonth;
+    private int scheduledWorkingDaysThisMonth;
+    private BigDecimal earnedPayThisMonth;
+    private BigDecimal salaryPaidThisMonth;
+    private BigDecimal totalBalanceThisMonth;
 
     public UserSummary() {
     }
@@ -33,10 +38,22 @@ public class UserSummary {
     }
 
     public UserSummary(Long id, String fullName, String email, String role, String profileImage,
-                       boolean active, LocalDateTime createdAt, BigDecimal monthlySalary, int workingDaysThisMonth) {
+                       boolean active, LocalDateTime createdAt, BigDecimal dailySalary, int workingDaysThisMonth) {
         this(id, fullName, email, role, profileImage, active, createdAt);
-        this.monthlySalary = monthlySalary;
+        this.dailySalary = dailySalary;
         this.workingDaysThisMonth = workingDaysThisMonth;
+    }
+
+    public UserSummary(Long id, String fullName, String email, String role, String profileImage,
+                       boolean active, LocalDateTime createdAt, BigDecimal dailySalary, BigDecimal monthlyAdvance,
+                       int workingDaysThisMonth, int scheduledWorkingDaysThisMonth, BigDecimal salaryPaidThisMonth,
+                       BigDecimal earnedPayThisMonth, BigDecimal totalBalanceThisMonth) {
+        this(id, fullName, email, role, profileImage, active, createdAt, dailySalary, workingDaysThisMonth);
+        this.monthlyAdvance = monthlyAdvance;
+        this.scheduledWorkingDaysThisMonth = scheduledWorkingDaysThisMonth;
+        this.salaryPaidThisMonth = salaryPaidThisMonth;
+        this.earnedPayThisMonth = earnedPayThisMonth;
+        this.totalBalanceThisMonth = totalBalanceThisMonth;
     }
 
     public Long getId() {
@@ -103,12 +120,20 @@ public class UserSummary {
         this.source = source;
     }
 
-    public BigDecimal getMonthlySalary() {
-        return monthlySalary;
+    public BigDecimal getDailySalary() {
+        return dailySalary;
     }
 
-    public void setMonthlySalary(BigDecimal monthlySalary) {
-        this.monthlySalary = monthlySalary;
+    public void setDailySalary(BigDecimal dailySalary) {
+        this.dailySalary = dailySalary;
+    }
+
+    public BigDecimal getMonthlyAdvance() {
+        return monthlyAdvance;
+    }
+
+    public void setMonthlyAdvance(BigDecimal monthlyAdvance) {
+        this.monthlyAdvance = monthlyAdvance;
     }
 
     public int getWorkingDaysThisMonth() {
@@ -117,5 +142,37 @@ public class UserSummary {
 
     public void setWorkingDaysThisMonth(int workingDaysThisMonth) {
         this.workingDaysThisMonth = workingDaysThisMonth;
+    }
+
+    public int getScheduledWorkingDaysThisMonth() {
+        return scheduledWorkingDaysThisMonth;
+    }
+
+    public void setScheduledWorkingDaysThisMonth(int scheduledWorkingDaysThisMonth) {
+        this.scheduledWorkingDaysThisMonth = scheduledWorkingDaysThisMonth;
+    }
+
+    public BigDecimal getEarnedPayThisMonth() {
+        return earnedPayThisMonth;
+    }
+
+    public void setEarnedPayThisMonth(BigDecimal earnedPayThisMonth) {
+        this.earnedPayThisMonth = earnedPayThisMonth;
+    }
+
+    public BigDecimal getSalaryPaidThisMonth() {
+        return salaryPaidThisMonth;
+    }
+
+    public void setSalaryPaidThisMonth(BigDecimal salaryPaidThisMonth) {
+        this.salaryPaidThisMonth = salaryPaidThisMonth;
+    }
+
+    public BigDecimal getTotalBalanceThisMonth() {
+        return totalBalanceThisMonth;
+    }
+
+    public void setTotalBalanceThisMonth(BigDecimal totalBalanceThisMonth) {
+        this.totalBalanceThisMonth = totalBalanceThisMonth;
     }
 }

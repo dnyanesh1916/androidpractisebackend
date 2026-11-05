@@ -4,12 +4,19 @@ import com.attendease.dto.AttendanceRequest;
 import com.attendease.dto.AttendanceResponse;
 import com.attendease.dto.UserSummary;
 import com.attendease.entity.AttendanceRecord;
+import com.attendease.entity.User;
+import com.attendease.repository.UserRepository;
+import com.attendease.service.AdminService;
 import com.attendease.service.AttendanceService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/attendance")
@@ -17,9 +24,14 @@ import java.util.List;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    private final AdminService adminService;
+    private final UserRepository userRepository;
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, AdminService adminService,
+                                UserRepository userRepository) {
         this.attendanceService = attendanceService;
+        this.adminService = adminService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/mark")
@@ -34,6 +46,26 @@ public class AttendanceController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<AttendanceRecord>> getUserAttendance(@PathVariable Long userId) {
         return ResponseEntity.ok(attendanceService.getUserAttendance(userId));
+    }
+
+    @GetMapping("/user/{userId}/compensation")
+    public ResponseEntity<?> getUserCompensation(@PathVariable Long userId,
+                                                 @AuthenticationPrincipal String authenticatedEmail,
+                                                 @RequestParam(required = false) Integer year,
+                                                 @RequestParam(required = false) Integer month) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (authenticatedEmail == null || !user.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "You can only view your own compensation details"));
+        }
+
+        LocalDate currentDate = LocalDate.now();
+        return ResponseEntity.ok(adminService.getUserSummary(userId,
+                year == null ? currentDate.getYear() : year,
+                month == null ? currentDate.getMonthValue() : month));
     }
 
     @GetMapping("/today")
