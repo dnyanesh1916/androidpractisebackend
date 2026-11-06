@@ -3,6 +3,7 @@ package com.attendease.controller;
 import com.attendease.dto.AttendanceRequest;
 import com.attendease.dto.AttendanceResponse;
 import com.attendease.dto.UserSummary;
+import com.attendease.entity.CompensationTransaction;
 import com.attendease.entity.AttendanceRecord;
 import com.attendease.entity.User;
 import com.attendease.repository.UserRepository;
@@ -66,6 +67,22 @@ public class AttendanceController {
         return ResponseEntity.ok(adminService.getUserSummary(userId,
                 year == null ? currentDate.getYear() : year,
                 month == null ? currentDate.getMonthValue() : month));
+    }
+
+    @GetMapping("/user/{userId}/transactions")
+    public ResponseEntity<?> getUserTransactions(@PathVariable Long userId,
+                                                 @AuthenticationPrincipal String authenticatedEmail) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (authenticatedEmail == null || !user.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "You can only view your own compensation transactions"));
+        }
+
+        List<CompensationTransaction> transactions = adminService.getTransactions(userId);
+        return ResponseEntity.ok(transactions);
     }
 
     @GetMapping("/today")
