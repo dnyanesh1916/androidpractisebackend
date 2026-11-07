@@ -345,7 +345,7 @@ public class AdminService {
         BigDecimal earnedPay = user.getDailySalary() == null ? null
             : user.getDailySalary().multiply(BigDecimal.valueOf(workingDaysThisMonth))
             .setScale(2, RoundingMode.HALF_UP);
-        BigDecimal totalBalance = earnedPay == null ? null : earnedPay.subtract(advance).add(salaryPaid);
+        BigDecimal totalBalance = earnedPay == null ? null : earnedPay.subtract(advance).subtract(salaryPaid);
         return new UserSummary(user.getId(), user.getFullName(), null, user.getRole().name(),
             user.getProfileImage(), user.isActive(), user.getCreatedAt(), user.getDailySalary(), advance,
             workingDaysThisMonth, scheduledWorkingDays, salaryPaid, earnedPay, totalBalance);

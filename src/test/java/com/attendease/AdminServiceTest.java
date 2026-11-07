@@ -112,7 +112,7 @@ class AdminServiceTest {
     }
 
     @Test
-    void includesSalaryPaidInMonthlyBalance() {
+    void subtractsSalaryPaidFromMonthlyBalance() {
         User user = activeUser();
         user.setId(2L);
         AttendanceRecord attendance = new AttendanceRecord();
@@ -134,7 +134,7 @@ class AdminServiceTest {
 
         var summary = adminService.getUserSummary(2L, LocalDate.now().getYear(), LocalDate.now().getMonthValue());
 
-        assertEquals(new BigDecimal("110.00"), summary.getTotalBalanceThisMonth());
+        assertEquals(new BigDecimal("70.00"), summary.getTotalBalanceThisMonth());
     }
 
     private User activeUser() {
