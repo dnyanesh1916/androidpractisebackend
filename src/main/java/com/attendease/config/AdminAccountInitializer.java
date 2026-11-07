@@ -62,6 +62,6 @@ public class AdminAccountInitializer implements ApplicationRunner {
         if (updated) {
             userRepository.save(admin);
         }
-        logger.info("Configured administrator account is available for {}", normalizedEmail);
+        logger.info("Configured administrator account is available as username {}", admin.getUsername());
     }
 }

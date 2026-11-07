@@ -54,21 +54,21 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request,
                                               HttpServletRequest httpRequest,
                                               HttpServletResponse httpResponse) {
-        logger.info("POST /api/auth/login called for email={}", request != null ? request.getEmail() : "null");
+        logger.info("POST /api/auth/login called for username={}", request != null ? request.getUsername() : "null");
         try {
             AuthResponse response = authService.login(request);
             var authentication = UsernamePasswordAuthenticationToken.authenticated(
-                    response.getEmail(), null,
+                    response.getUsername(), null,
                     List.of(new SimpleGrantedAuthority("ROLE_" + response.getRole())));
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
             securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
-            logger.info("Login successful for email={}, role={}", response.getEmail(), response.getRole());
+            logger.info("Login successful for username={}, role={}", response.getUsername(), response.getRole());
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            logger.warn("Login failed for email={} with message={}", request != null ? request.getEmail() : "null", e.getMessage());
+            logger.warn("Login failed for username={} with message={}", request != null ? request.getUsername() : "null", e.getMessage());
             AuthResponse response = new AuthResponse();
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);

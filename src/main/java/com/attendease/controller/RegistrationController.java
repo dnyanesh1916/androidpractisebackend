@@ -44,7 +44,7 @@ public class RegistrationController {
         return registrationService.getAllRegistrations().stream()
                 .map(registration -> {
                     UserSummary summary = new UserSummary(registration.getId(), registration.getFullName(),
-                            registration.getEmail(), "USER", null, false, registration.getCreatedAt());
+                            null, "USER", null, false, registration.getCreatedAt());
                     summary.setSource("LEGACY");
                     return summary;
                 })

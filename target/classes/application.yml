@@ -19,6 +19,7 @@ logging:
       max-history: 14
 
 attendease:
+  time-zone: ${ATTENDEASE_TIME_ZONE:Asia/Kolkata}
   admin:
     email: ${ATTENDEASE_ADMIN_EMAIL:}
     password: ${ATTENDEASE_ADMIN_PASSWORD:}

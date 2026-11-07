@@ -28,6 +28,9 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         String email = request.getEmail() == null ? "" : request.getEmail().trim();
+        if (email.isBlank()) {
+            throw new IllegalArgumentException("Email is required for legacy registration");
+        }
         if (repository.existsByEmail(email)) {
             throw new IllegalArgumentException("User with this email already exists");
         }

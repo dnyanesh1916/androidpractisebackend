@@ -49,14 +49,13 @@ class AuthServiceTest {
         User user = new User();
         user.setId(1L);
         user.setFullName("Jane Doe");
-        user.setEmail("jane@example.com");
         user.setPassword("Password@123");
         user.setRole(Role.USER);
 
-        when(userRepository.findByEmail("jane@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         LoginRequest request = new LoginRequest();
-        request.setEmail("jane@example.com");
+        request.setUsername("user1");
         request.setPassword("Password@123");
 
         var response = authService.login(request);
@@ -65,18 +64,57 @@ class AuthServiceTest {
     }
 
     @Test
+    void shouldAllowConfiguredAdminEmailAndReturnGeneratedUsername() {
+        User admin = new User();
+        admin.setId(7L);
+        admin.setFullName("AttendEase Administrator");
+        admin.setEmail("admin@gmail.com");
+        admin.setPassword(passwordEncoder.encode("AdminPassword@123"));
+        admin.setRole(Role.ADMIN);
+        admin.setActive(true);
+        when(userRepository.findByEmail("admin@gmail.com")).thenReturn(Optional.of(admin));
+
+        LoginRequest request = new LoginRequest();
+        request.setUsername("admin@gmail.com");
+        request.setPassword("AdminPassword@123");
+
+        var response = authService.login(request);
+
+        assertEquals("user7", response.getUsername());
+        assertEquals("ADMIN", response.getRole());
+    }
+
+    @Test
+    void shouldNotAllowRegularUserToLoginWithEmail() {
+        User user = new User();
+        user.setId(8L);
+        user.setEmail("user@example.com");
+        user.setPassword(passwordEncoder.encode("Password@123"));
+        user.setRole(Role.USER);
+        user.setActive(true);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+
+        LoginRequest request = new LoginRequest();
+        request.setUsername("user@example.com");
+        request.setPassword("Password@123");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> authService.login(request));
+
+        assertEquals("Invalid username or password", exception.getMessage());
+    }
+
+    @Test
     void shouldNotLoginLegacyRegistrationBeforeAdministratorApproval() {
         UserRegistration legacyUser = new UserRegistration();
         legacyUser.setId(2L);
-        legacyUser.setFullName("Sahil Sharma");
-        legacyUser.setEmail("sahil@gmail.com");
         legacyUser.setPassword("Password@123");
 
-        when(userRepository.findByEmail("sahil@gmail.com")).thenReturn(Optional.empty());
-        when(userRegistrationRepository.findByEmail("sahil@gmail.com")).thenReturn(Optional.of(legacyUser));
+        when(userRepository.findById(2L)).thenReturn(Optional.empty());
+        when(userRegistrationRepository.findById(2L)).thenReturn(Optional.of(legacyUser));
 
         LoginRequest request = new LoginRequest();
-        request.setEmail("sahil@gmail.com");
+        request.setUsername("user2");
         request.setPassword("Password@123");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -89,14 +127,18 @@ class AuthServiceTest {
     void shouldSaveNewRegistrationAsPendingApproval() {
         RegisterRequest request = new RegisterRequest();
         request.setFullName("New User");
-        request.setEmail("new@example.com");
         request.setPassword("Password@123");
         request.setConfirmPassword("Password@123");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User saved = invocation.getArgument(0);
+            saved.setId(3L);
+            return saved;
+        });
 
         var response = authService.register(request);
 
-        assertEquals("Registration successful. Awaiting admin approval.", response.getMessage());
+        assertEquals("Registration successful. Your username is user3. Awaiting admin approval.", response.getMessage());
+        assertEquals("user3", response.getUsername());
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(savedUser.capture());
         assertFalse(savedUser.getValue().isActive());

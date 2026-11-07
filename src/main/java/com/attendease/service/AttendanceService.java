@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,9 @@ public class AttendanceService {
 
     @Value("${attendease.company.radius-meters:200}")
     private int radiusMeters;
+
+    @Value("${attendease.time-zone:Asia/Kolkata}")
+    private String applicationTimeZone = "Asia/Kolkata";
 
     public AttendanceService(AttendanceRecordRepository attendanceRecordRepository,
                              AttendanceLocationRepository attendanceLocationRepository,
@@ -71,7 +75,8 @@ public class AttendanceService {
         }
 
         String type = request.getAttendanceType() == null ? "CHECK_IN" : request.getAttendanceType().trim().toUpperCase();
-        LocalDate today = LocalDate.now();
+        ZoneId zoneId = ZoneId.of(applicationTimeZone);
+        LocalDate today = LocalDate.now(zoneId);
         LocalDateTime startOfDay = LocalDateTime.of(today, LocalTime.MIDNIGHT);
         LocalDateTime endOfDay = LocalDateTime.of(today, LocalTime.MAX);
 
@@ -84,7 +89,7 @@ public class AttendanceService {
 
             AttendanceRecord record = new AttendanceRecord();
             record.setUserId(user.getId());
-            record.setCheckInTime(LocalDateTime.now());
+            record.setCheckInTime(LocalDateTime.now(zoneId));
             record.setCheckInLatitude(request.getLatitude());
             record.setCheckInLongitude(request.getLongitude());
             record.setFaceVerified(faceVerified);
@@ -103,7 +108,7 @@ public class AttendanceService {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No active check-in found for the user"));
 
-            latest.setCheckOutTime(LocalDateTime.now());
+            latest.setCheckOutTime(LocalDateTime.now(zoneId));
             latest.setCheckOutLatitude(request.getLatitude());
             latest.setCheckOutLongitude(request.getLongitude());
             latest.setLocationVerified(locationVerified);
@@ -123,7 +128,7 @@ public class AttendanceService {
     }
 
     public List<AttendanceRecord> getTodayAttendance() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of(applicationTimeZone));
         return attendanceRecordRepository.findByCheckInTimeBetweenOrderByCheckInTimeDesc(
                 LocalDateTime.of(today, LocalTime.MIDNIGHT),
                 LocalDateTime.of(today, LocalTime.MAX)
@@ -134,7 +139,7 @@ public class AttendanceService {
         List<User> users = userRepository.findAll();
         List<UserSummary> result = new ArrayList<>();
         for (User user : users) {
-            result.add(new UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.getProfileImage(), user.isActive()));
+            result.add(new UserSummary(user.getId(), user.getFullName(), null, user.getRole().name(), user.getProfileImage(), user.isActive()));
         }
         return result;
     }

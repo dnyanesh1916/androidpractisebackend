@@ -51,14 +51,14 @@ public class AttendanceController {
 
     @GetMapping("/user/{userId}/compensation")
     public ResponseEntity<?> getUserCompensation(@PathVariable Long userId,
-                                                 @AuthenticationPrincipal String authenticatedEmail,
+                                                 @AuthenticationPrincipal String authenticatedUsername,
                                                  @RequestParam(required = false) Integer year,
                                                  @RequestParam(required = false) Integer month) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
-        if (authenticatedEmail == null || !user.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+        if (!isAuthenticatedUser(user, authenticatedUsername)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("message", "You can only view your own compensation details"));
         }
@@ -71,12 +71,12 @@ public class AttendanceController {
 
     @GetMapping("/user/{userId}/transactions")
     public ResponseEntity<?> getUserTransactions(@PathVariable Long userId,
-                                                 @AuthenticationPrincipal String authenticatedEmail) {
+                                                 @AuthenticationPrincipal String authenticatedUsername) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
-        if (authenticatedEmail == null || !user.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+        if (!isAuthenticatedUser(user, authenticatedUsername)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("message", "You can only view your own compensation transactions"));
         }
@@ -93,5 +93,11 @@ public class AttendanceController {
     @GetMapping("/users")
     public ResponseEntity<List<UserSummary>> getUsers() {
         return ResponseEntity.ok(attendanceService.getUsers());
+    }
+
+    private boolean isAuthenticatedUser(User user, String authenticatedUsername) {
+        return authenticatedUsername != null
+                && (user.getUsername().equalsIgnoreCase(authenticatedUsername)
+                || user.getEmail() != null && user.getEmail().equalsIgnoreCase(authenticatedUsername));
     }
 }

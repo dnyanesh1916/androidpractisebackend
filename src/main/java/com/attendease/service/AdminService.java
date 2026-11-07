@@ -38,11 +38,14 @@ import java.time.YearMonth;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class AdminService {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminService.class);
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("^user([1-9][0-9]*)$");
 
     private final UserRepository userRepository;
     private final UserRegistrationRepository legacyRegistrationRepository;
@@ -116,12 +119,14 @@ public class AdminService {
             }
 
         List<UserSummary> users = new ArrayList<>(userRepository.findAll().stream()
+                .filter(user -> user.getRole() == Role.USER)
                 .map(user -> toSummary(user, workedDates.getOrDefault(user.getId(), Set.of()).size(), selectedMonth,
                     advances.get(user.getId()), salaryPayments.getOrDefault(user.getId(), BigDecimal.ZERO)))
                 .toList());
 
         legacyRegistrationRepository.findAll().stream()
-                .filter(registration -> !userRepository.existsByEmail(registration.getEmail()))
+                .filter(registration -> registration.getEmail() == null
+                        || !userRepository.existsByEmail(registration.getEmail()))
                 .map(this::toLegacySummary)
                 .forEach(users::add);
 
@@ -140,7 +145,7 @@ public class AdminService {
 
     @Transactional
     public CompensationTransaction addTransaction(Long userId, CompensationTransactionRequest request,
-                                                  String adminEmail) {
+                                                  String adminUsername) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user.getRole() != Role.USER) {
@@ -159,34 +164,34 @@ public class AdminService {
                 userId, monthStart, nextMonthStart.minusNanos(1))) {
             throw new IllegalArgumentException("Mark attendance at least once this month before recording a salary payment or advance");
         }
-        User admin = userRepository.findByEmail(adminEmail)
-                .orElseThrow(() -> new IllegalStateException("Authenticated administrator was not found"));
+        User admin = findAdmin(adminUsername);
         CompensationTransaction transaction = new CompensationTransaction();
         transaction.setUserId(user.getId());
         transaction.setType(request.getType());
         transaction.setAmount(request.getAmount());
         transaction.setDescription(request.getDescription().trim());
-        transaction.setRecordedByEmail(admin.getEmail());
+        transaction.setRecordedByEmail(admin.getEmail() == null ? admin.getUsername() : admin.getEmail());
         CompensationTransaction saved = compensationTransactionRepository.save(transaction);
         String action = request.getType() == CompensationTransactionType.ADVANCE
                 ? "ADVANCE_RECORDED" : "SALARY_PAYMENT_RECORDED";
-        recordActivity(adminEmail, action, request.getType() + " of " + request.getAmount() + " for "
-            + user.getEmail() + ": " + request.getDescription().trim());
-        logger.info("Admin {} recorded compensation transaction id={} for userId={}", adminEmail, saved.getId(), userId);
+        recordActivity(adminUsername, action, request.getType() + " of " + request.getAmount() + " for "
+            + user.getUsername() + ": " + request.getDescription().trim());
+        logger.info("Admin {} recorded compensation transaction id={} for userId={}", adminUsername, saved.getId(), userId);
         return saved;
     }
 
     @Transactional
-    public UserSummary updateSalary(Long userId, SalaryUpdateRequest request, String adminEmail) {
+    public UserSummary updateSalary(Long userId, SalaryUpdateRequest request, String adminUsername) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user.getRole() != Role.USER) {
             throw new IllegalArgumentException("Salary can only be assigned to regular user accounts");
         }
+        requireDailySalary(request.getDailySalary());
         user.setDailySalary(request.getDailySalary());
         User saved = userRepository.save(user);
-        recordActivity(adminEmail, "USER_DAILY_SALARY_UPDATED", "Updated daily salary for " + saved.getEmail());
-        logger.info("Admin {} updated daily salary for userId={}", adminEmail, userId);
+        recordActivity(adminUsername, "USER_DAILY_SALARY_UPDATED", "Updated daily salary for " + saved.getUsername());
+        logger.info("Admin {} updated daily salary for userId={}", adminUsername, userId);
         YearMonth currentMonth = YearMonth.now();
         return getUserSummary(userId, currentMonth.getYear(), currentMonth.getMonthValue());
     }
@@ -229,9 +234,10 @@ public class AdminService {
     }
 
     @Transactional
-    public UserSummary approveUser(Long userId, String source, String adminEmail, BigDecimal dailySalary) {
+    public UserSummary approveUser(Long userId, String source, String adminUsername, BigDecimal dailySalary) {
+        requireDailySalary(dailySalary);
         if ("LEGACY".equalsIgnoreCase(source)) {
-            return approveLegacyUser(userId, adminEmail, dailySalary);
+            return approveLegacyUser(userId, adminUsername, dailySalary);
         }
 
         User user = userRepository.findById(userId)
@@ -250,16 +256,16 @@ public class AdminService {
         }
         if (changed) {
             user = userRepository.save(user);
-            recordActivity(adminEmail, "USER_APPROVED", "Approved registration for " + user.getEmail());
-            logger.info("Admin {} approved registration for userId={}", adminEmail, userId);
+            recordActivity(adminUsername, "USER_APPROVED", "Approved registration for " + user.getUsername());
+            logger.info("Admin {} approved registration for userId={}", adminUsername, userId);
         }
         return toSummary(user);
     }
 
-    private UserSummary approveLegacyUser(Long registrationId, String adminEmail, BigDecimal dailySalary) {
+    private UserSummary approveLegacyUser(Long registrationId, String adminUsername, BigDecimal dailySalary) {
         UserRegistration registration = legacyRegistrationRepository.findById(registrationId)
                 .orElseThrow(() -> new IllegalArgumentException("Registration not found"));
-        if (userRepository.existsByEmail(registration.getEmail())) {
+        if (registration.getEmail() != null && userRepository.existsByEmail(registration.getEmail())) {
             throw new IllegalArgumentException("A user account already exists for this email");
         }
 
@@ -272,8 +278,8 @@ public class AdminService {
         user.setDailySalary(dailySalary);
         User saved = userRepository.save(user);
         legacyRegistrationRepository.delete(registration);
-        recordActivity(adminEmail, "USER_APPROVED", "Approved legacy registration for " + saved.getEmail());
-        logger.info("Admin {} approved legacy registration id={} as userId={}", adminEmail, registrationId, saved.getId());
+        recordActivity(adminUsername, "USER_APPROVED", "Approved legacy registration for " + saved.getUsername());
+        logger.info("Admin {} approved legacy registration id={} as userId={}", adminUsername, registrationId, saved.getId());
         return toSummary(saved);
     }
 
@@ -283,34 +289,34 @@ public class AdminService {
     }
 
     @Transactional
-    public AttendanceLocation createLocation(AttendanceLocationRequest request, String adminEmail) {
+    public AttendanceLocation createLocation(AttendanceLocationRequest request, String adminUsername) {
         AttendanceLocation location = new AttendanceLocation();
         applyLocationRequest(location, request);
         AttendanceLocation saved = locationRepository.save(location);
-        recordActivity(adminEmail, "LOCATION_CREATED", "Created attendance location " + saved.getName());
-        logger.info("Admin {} created attendance location id={}", adminEmail, saved.getId());
+        recordActivity(adminUsername, "LOCATION_CREATED", "Created attendance location " + saved.getName());
+        logger.info("Admin {} created attendance location id={}", adminUsername, saved.getId());
         return saved;
     }
 
     @Transactional
-    public AttendanceLocation updateLocation(Long locationId, AttendanceLocationRequest request, String adminEmail) {
+    public AttendanceLocation updateLocation(Long locationId, AttendanceLocationRequest request, String adminUsername) {
         AttendanceLocation location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new IllegalArgumentException("Attendance location not found"));
         applyLocationRequest(location, request);
         AttendanceLocation saved = locationRepository.save(location);
-        recordActivity(adminEmail, "LOCATION_UPDATED", "Updated attendance location " + saved.getName());
-        logger.info("Admin {} updated attendance location id={}", adminEmail, locationId);
+        recordActivity(adminUsername, "LOCATION_UPDATED", "Updated attendance location " + saved.getName());
+        logger.info("Admin {} updated attendance location id={}", adminUsername, locationId);
         return saved;
     }
 
     @Transactional
-    public void deactivateLocation(Long locationId, String adminEmail) {
+    public void deactivateLocation(Long locationId, String adminUsername) {
         AttendanceLocation location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new IllegalArgumentException("Attendance location not found"));
         location.setActive(false);
         locationRepository.save(location);
-        recordActivity(adminEmail, "LOCATION_DEACTIVATED", "Deactivated attendance location " + location.getName());
-        logger.info("Admin {} deactivated attendance location id={}", adminEmail, locationId);
+        recordActivity(adminUsername, "LOCATION_DEACTIVATED", "Deactivated attendance location " + location.getName());
+        logger.info("Admin {} deactivated attendance location id={}", adminUsername, locationId);
     }
 
     @Transactional(readOnly = true)
@@ -339,8 +345,8 @@ public class AdminService {
         BigDecimal earnedPay = user.getDailySalary() == null ? null
             : user.getDailySalary().multiply(BigDecimal.valueOf(workingDaysThisMonth))
             .setScale(2, RoundingMode.HALF_UP);
-        BigDecimal totalBalance = earnedPay == null ? null : earnedPay.subtract(advance);
-        return new UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(),
+        BigDecimal totalBalance = earnedPay == null ? null : earnedPay.subtract(advance).add(salaryPaid);
+        return new UserSummary(user.getId(), user.getFullName(), null, user.getRole().name(),
             user.getProfileImage(), user.isActive(), user.getCreatedAt(), user.getDailySalary(), advance,
             workingDaysThisMonth, scheduledWorkingDays, salaryPaid, earnedPay, totalBalance);
     }
@@ -357,14 +363,41 @@ public class AdminService {
 
     private UserSummary toLegacySummary(UserRegistration registration) {
         UserSummary summary = new UserSummary(registration.getId(), registration.getFullName(),
-                registration.getEmail(), Role.USER.name(), null, false, registration.getCreatedAt());
+                null, Role.USER.name(), null, false, registration.getCreatedAt());
         summary.setSource("LEGACY");
         return summary;
     }
 
-    private void recordActivity(String adminEmail, String action, String details) {
-        User admin = userRepository.findByEmail(adminEmail)
-                .orElseThrow(() -> new IllegalStateException("Authenticated administrator was not found"));
+    private void requireDailySalary(BigDecimal dailySalary) {
+        if (dailySalary == null || dailySalary.signum() <= 0) {
+            throw new IllegalArgumentException("A daily salary greater than zero is required");
+        }
+    }
+
+    private User findAdmin(String adminUsername) {
+        Matcher matcher = USERNAME_PATTERN.matcher(adminUsername == null ? "" : adminUsername);
+        if (!matcher.matches()) {
+            if (adminUsername == null || adminUsername.isBlank()) {
+                throw new IllegalStateException("Authenticated administrator was not found");
+            }
+            return userRepository.findByEmail(adminUsername)
+                    .filter(admin -> admin.getRole() == Role.ADMIN)
+                    .orElseThrow(() -> new IllegalStateException("Authenticated administrator was not found"));
+        }
+        try {
+            User admin = userRepository.findById(Long.parseLong(matcher.group(1)))
+                    .orElseThrow(() -> new IllegalStateException("Authenticated administrator was not found"));
+            if (admin.getRole() != Role.ADMIN) {
+                throw new IllegalStateException("Authenticated administrator was not found");
+            }
+            return admin;
+        } catch (NumberFormatException exception) {
+            throw new IllegalStateException("Authenticated administrator was not found");
+        }
+    }
+
+    private void recordActivity(String adminUsername, String action, String details) {
+        User admin = findAdmin(adminUsername);
         AdminActivityLog activity = new AdminActivityLog();
         activity.setAdminId(admin.getId());
         activity.setAction(action);

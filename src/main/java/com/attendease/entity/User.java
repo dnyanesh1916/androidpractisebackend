@@ -52,6 +52,10 @@ public class User {
         return id;
     }
 
+    public String getUsername() {
+        return id == null ? null : "user" + id;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }

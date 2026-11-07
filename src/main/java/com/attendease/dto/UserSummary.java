@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 public class UserSummary {
     private Long id;
+    private String username;
     private String fullName;
     private String email;
     private String role;
@@ -29,6 +30,7 @@ public class UserSummary {
 
     public UserSummary(Long id, String fullName, String email, String role, String profileImage, boolean active, LocalDateTime createdAt) {
         this.id = id;
+        this.username = id == null ? null : "user" + id;
         this.fullName = fullName;
         this.email = email;
         this.role = role;
@@ -60,8 +62,13 @@ public class UserSummary {
         return id;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public void setId(Long id) {
         this.id = id;
+        this.username = id == null ? null : "user" + id;
     }
 
     public String getFullName() {

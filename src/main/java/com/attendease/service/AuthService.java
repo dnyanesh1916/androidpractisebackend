@@ -13,10 +13,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 public class AuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("^user([1-9][0-9]*)$");
 
     private final UserRepository userRepository;
     private final UserRegistrationRepository userRegistrationRepository;
@@ -39,14 +44,9 @@ public class AuthService {
             throw new IllegalArgumentException("Password and confirm password must match");
         }
 
-        String email = request.getEmail() == null ? "" : request.getEmail().trim();
-        if (userRepository.existsByEmail(email) || userRegistrationRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("User with this email already exists");
-        }
-
         User user = new User();
         user.setFullName(request.getFullName().trim());
-        user.setEmail(email);
+        user.setEmail("user-" + UUID.randomUUID() + "@attendease.invalid");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setProfileImage(request.getProfileImage());
         user.setRole(Role.USER);
@@ -54,7 +54,9 @@ public class AuthService {
 
         User saved = userRepository.save(user);
 
-        return new AuthResponse(saved.getId(), saved.getFullName(), saved.getEmail(), saved.getRole().name(), saved.getProfileImage(), "Registration successful. Awaiting admin approval.");
+        return new AuthResponse(saved.getId(), saved.getFullName(), null, saved.getRole().name(),
+                saved.getProfileImage(), "Registration successful. Your username is " + saved.getUsername()
+                + ". Awaiting admin approval.");
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -62,20 +64,34 @@ public class AuthService {
             throw new IllegalArgumentException("Login request is required");
         }
 
-        String email = request.getEmail() == null ? "" : request.getEmail().trim();
-        logger.info("Attempting login for email={}", email);
+        String username = request.getUsername() == null ? "" : request.getUsername().trim();
+        Matcher matcher = USERNAME_PATTERN.matcher(username);
+        logger.info("Attempting login for username={}", username);
 
-        User user = userRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    logger.warn("No user found in users table for email={} during login; checking legacy user_registration table", email);
-                    return userRegistrationRepository.findByEmail(email)
-                            .map(this::toUser)
-                            .orElse(null);
-                });
+        User user;
+        if (matcher.matches()) {
+            long userId;
+            try {
+                userId = Long.parseLong(matcher.group(1));
+            } catch (NumberFormatException exception) {
+                throw new IllegalArgumentException("Invalid username or password");
+            }
+            user = userRepository.findById(userId).orElse(null);
+        } else {
+            user = userRepository.findByEmail(username)
+                    .filter(candidate -> candidate.getRole() == Role.ADMIN)
+                    .orElse(null);
+        }
 
         if (user == null) {
-            logger.warn("No user found for email={} during login", email);
-            throw new IllegalArgumentException("Invalid email or password");
+            UserRegistration registration = matcher.matches()
+                    ? userRegistrationRepository.findById(Long.parseLong(matcher.group(1))).orElse(null)
+                    : null;
+            if (registration != null && isPasswordValid(request.getPassword(), registration.getPassword())) {
+                throw new IllegalArgumentException("Your registration is awaiting administrator approval");
+            }
+            logger.warn("No user found for username={}", username);
+            throw new IllegalArgumentException("Invalid username or password");
         }
 
         logger.info("User found for login: id={}, storedPasswordStartsWithBcrypt={}, storedPasswordLength={}",
@@ -84,16 +100,17 @@ public class AuthService {
                 user.getPassword() == null ? 0 : user.getPassword().length());
 
         if (!isPasswordValid(request.getPassword(), user.getPassword())) {
-            logger.warn("Password mismatch for userId={}, email={}, rawPasswordProvided={} ", user.getId(), email, request.getPassword() != null);
-            throw new IllegalArgumentException("Invalid email or password");
+            logger.warn("Password mismatch for username={}, rawPasswordProvided={}", username, request.getPassword() != null);
+            throw new IllegalArgumentException("Invalid username or password");
         }
 
         if (!user.isActive()) {
             throw new IllegalArgumentException("Your registration is awaiting administrator approval");
         }
 
-        logger.info("Password validation succeeded for email={} using id={}", email, user.getId());
-        return new AuthResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.getProfileImage(), "Login successful");
+        logger.info("Password validation succeeded for username={} using id={}", username, user.getId());
+        return new AuthResponse(user.getId(), user.getFullName(), null, user.getRole().name(),
+                user.getProfileImage(), "Login successful");
     }
 
     private boolean isPasswordValid(String rawPassword, String storedPassword) {
@@ -115,14 +132,4 @@ public class AuthService {
         return matchesLegacyPlainText;
     }
 
-    private User toUser(UserRegistration registration) {
-        User user = new User();
-        user.setId(registration.getId());
-        user.setFullName(registration.getFullName());
-        user.setEmail(registration.getEmail());
-        user.setPassword(registration.getPassword());
-        user.setRole(Role.USER);
-        user.setActive(false);
-        return user;
-    }
 }

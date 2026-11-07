@@ -2,6 +2,7 @@ package com.attendease.dto;
 
 public class AuthResponse {
     private Long userId;
+    private String username;
     private String fullName;
     private String email;
     private String role;
@@ -13,6 +14,7 @@ public class AuthResponse {
 
     public AuthResponse(Long userId, String fullName, String email, String role, String profileImage, String message) {
         this.userId = userId;
+        this.username = userId == null ? null : "user" + userId;
         this.fullName = fullName;
         this.email = email;
         this.role = role;
@@ -26,6 +28,15 @@ public class AuthResponse {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+        this.username = userId == null ? null : "user" + userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFullName() {

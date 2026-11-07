@@ -3,6 +3,7 @@ package com.attendease;
 import com.attendease.dto.CompensationTransactionRequest;
 import com.attendease.entity.CompensationTransaction;
 import com.attendease.entity.CompensationTransactionType;
+import com.attendease.entity.AttendanceRecord;
 import com.attendease.entity.Role;
 import com.attendease.entity.User;
 import com.attendease.repository.AdminActivityLogRepository;
@@ -19,6 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,16 +91,50 @@ class AdminServiceTest {
         admin.setEmail("admin@example.com");
         admin.setRole(Role.ADMIN);
         when(userRepository.findById(2L)).thenReturn(Optional.of(user));
-        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
         when(attendanceRecordRepository.existsByUserIdAndCheckInTimeBetween(any(), any(), any())).thenReturn(true);
         when(compensationTransactionRepository.save(any(CompensationTransaction.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        CompensationTransaction saved = adminService.addTransaction(2L, request(), "admin@example.com");
+        CompensationTransaction saved = adminService.addTransaction(2L, request(), "user1");
 
         assertEquals(2L, saved.getUserId());
         assertEquals(CompensationTransactionType.ADVANCE, saved.getType());
         verify(activityLogRepository).save(any());
+    }
+
+    @Test
+    void requiresDailySalaryBeforeApprovingUser() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> adminService.approveUser(2L, "USER", "user1", null));
+
+        assertEquals("A daily salary greater than zero is required", exception.getMessage());
+    }
+
+    @Test
+    void includesSalaryPaidInMonthlyBalance() {
+        User user = activeUser();
+        user.setId(2L);
+        AttendanceRecord attendance = new AttendanceRecord();
+        attendance.setCheckInTime(LocalDate.now().withDayOfMonth(1).atStartOfDay());
+
+        CompensationTransaction advance = new CompensationTransaction();
+        advance.setUserId(2L);
+        advance.setType(CompensationTransactionType.ADVANCE);
+        advance.setAmount(new BigDecimal("10.00"));
+        CompensationTransaction salary = new CompensationTransaction();
+        salary.setUserId(2L);
+        salary.setType(CompensationTransactionType.SALARY_PAYMENT);
+        salary.setAmount(new BigDecimal("20.00"));
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+        when(attendanceRecordRepository.findByUserIdOrderByCheckInTimeDesc(2L)).thenReturn(List.of(attendance));
+        when(compensationTransactionRepository.findByCreatedAtBetweenOrderByCreatedAtDesc(any(), any()))
+                .thenReturn(List.of(advance, salary));
+
+        var summary = adminService.getUserSummary(2L, LocalDate.now().getYear(), LocalDate.now().getMonthValue());
+
+        assertEquals(new BigDecimal("110.00"), summary.getTotalBalanceThisMonth());
     }
 
     private User activeUser() {

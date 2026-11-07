@@ -11,10 +11,13 @@ import com.attendease.entity.AdminActivityLog;
 import com.attendease.entity.AttendanceRecord;
 import com.attendease.entity.AttendanceLocation;
 import com.attendease.entity.CompensationTransaction;
+import com.attendease.service.AdminDataExportService;
 import com.attendease.service.AdminService;
 import com.attendease.service.AttendanceService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,9 +36,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -44,10 +48,27 @@ public class AdminController {
 
     private final AttendanceService attendanceService;
     private final AdminService adminService;
+    private final AdminDataExportService adminDataExportService;
 
-    public AdminController(AttendanceService attendanceService, AdminService adminService) {
+    public AdminController(AttendanceService attendanceService, AdminService adminService,
+                           AdminDataExportService adminDataExportService) {
         this.attendanceService = attendanceService;
         this.adminService = adminService;
+        this.adminDataExportService = adminDataExportService;
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportDataWorkbook() throws IOException {
+        byte[] workbook = adminDataExportService.createWorkbook();
+        return workbookResponse("attendease-data.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", workbook);
+    }
+
+    @GetMapping("/export/latest")
+    public ResponseEntity<byte[]> downloadLatestDataWorkbook() {
+        return adminDataExportService.getLatestWorkbook()
+                .map(stored -> workbookResponse(stored.fileName(), stored.contentType(), stored.content()))
+                .orElseGet(() -> ResponseEntity.<byte[]>notFound().build());
     }
 
     @GetMapping("/summary")
@@ -72,16 +93,16 @@ public class AdminController {
     public ResponseEntity<UserSummary> approveUser(@PathVariable Long userId,
                                                    @RequestParam(defaultValue = "USER") String source,
                                                    @Valid @RequestBody(required = false) UserApprovalRequest request,
-                                                   @AuthenticationPrincipal String adminEmail) {
-        return ResponseEntity.ok(adminService.approveUser(userId, source, adminEmail,
+                                                   @AuthenticationPrincipal String adminUsername) {
+        return ResponseEntity.ok(adminService.approveUser(userId, source, adminUsername,
             request == null ? null : request.getDailySalary()));
     }
 
     @PatchMapping("/users/{userId}/salary")
     public ResponseEntity<UserSummary> updateSalary(@PathVariable Long userId,
                                                     @Valid @RequestBody SalaryUpdateRequest request,
-                                                    @AuthenticationPrincipal String adminEmail) {
-        return ResponseEntity.ok(adminService.updateSalary(userId, request, adminEmail));
+                                                    @AuthenticationPrincipal String adminUsername) {
+        return ResponseEntity.ok(adminService.updateSalary(userId, request, adminUsername));
     }
 
     @GetMapping("/users/{userId}/transactions")
@@ -100,9 +121,9 @@ public class AdminController {
     @PostMapping("/users/{userId}/transactions")
     public ResponseEntity<CompensationTransaction> addUserTransaction(@PathVariable Long userId,
                                                                       @Valid @RequestBody CompensationTransactionRequest request,
-                                                                      @AuthenticationPrincipal String adminEmail) {
+                                                                      @AuthenticationPrincipal String adminUsername) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(adminService.addTransaction(userId, request, adminEmail));
+                .body(adminService.addTransaction(userId, request, adminUsername));
     }
 
     @GetMapping("/locations")
@@ -112,21 +133,21 @@ public class AdminController {
 
     @PostMapping("/locations")
     public ResponseEntity<AttendanceLocation> createLocation(@Valid @RequestBody AttendanceLocationRequest request,
-                                                             @AuthenticationPrincipal String adminEmail) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.createLocation(request, adminEmail));
+                                                             @AuthenticationPrincipal String adminUsername) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.createLocation(request, adminUsername));
     }
 
     @PutMapping("/locations/{locationId}")
     public ResponseEntity<AttendanceLocation> updateLocation(@PathVariable Long locationId,
                                                              @Valid @RequestBody AttendanceLocationRequest request,
-                                                             @AuthenticationPrincipal String adminEmail) {
-        return ResponseEntity.ok(adminService.updateLocation(locationId, request, adminEmail));
+                                                             @AuthenticationPrincipal String adminUsername) {
+        return ResponseEntity.ok(adminService.updateLocation(locationId, request, adminUsername));
     }
 
     @DeleteMapping("/locations/{locationId}")
     public ResponseEntity<Void> deactivateLocation(@PathVariable Long locationId,
-                                                   @AuthenticationPrincipal String adminEmail) {
-        adminService.deactivateLocation(locationId, adminEmail);
+                                                   @AuthenticationPrincipal String adminUsername) {
+        adminService.deactivateLocation(locationId, adminUsername);
         return ResponseEntity.noContent().build();
     }
 
@@ -151,5 +172,12 @@ public class AdminController {
                 record.getStatus(),
                 record.getCheckInTime(),
                 record.getCheckOutTime());
+    }
+
+    private ResponseEntity<byte[]> workbookResponse(String fileName, String contentType, byte[] workbook) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(workbook);
     }
 }
