@@ -13,6 +13,7 @@ public class UserSummary {
     private boolean active;
     private LocalDateTime createdAt;
     private String source = "USER";
+    private String locationName;
     private BigDecimal dailySalary;
     private BigDecimal monthlyAdvance;
     private int workingDaysThisMonth;
@@ -125,6 +126,14 @@ public class UserSummary {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public BigDecimal getDailySalary() {

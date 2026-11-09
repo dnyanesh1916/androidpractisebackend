@@ -8,16 +8,23 @@ public class AttendanceResponse {
     private String message;
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
+    private String locationName;
 
     public AttendanceResponse() {
     }
 
     public AttendanceResponse(Long attendanceId, String status, String message, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
+        this(attendanceId, status, message, checkInTime, checkOutTime, null);
+    }
+
+    public AttendanceResponse(Long attendanceId, String status, String message, LocalDateTime checkInTime,
+                              LocalDateTime checkOutTime, String locationName) {
         this.attendanceId = attendanceId;
         this.status = status;
         this.message = message;
         this.checkInTime = checkInTime;
         this.checkOutTime = checkOutTime;
+        this.locationName = locationName;
     }
 
     public Long getAttendanceId() {
@@ -58,5 +65,13 @@ public class AttendanceResponse {
 
     public void setCheckOutTime(LocalDateTime checkOutTime) {
         this.checkOutTime = checkOutTime;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 }

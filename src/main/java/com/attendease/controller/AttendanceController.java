@@ -4,6 +4,7 @@ import com.attendease.dto.AttendanceRequest;
 import com.attendease.dto.AttendanceResponse;
 import com.attendease.dto.UserSummary;
 import com.attendease.entity.CompensationTransaction;
+import com.attendease.entity.AttendanceLocation;
 import com.attendease.entity.AttendanceRecord;
 import com.attendease.entity.User;
 import com.attendease.repository.UserRepository;
@@ -88,6 +89,11 @@ public class AttendanceController {
     @GetMapping("/today")
     public ResponseEntity<List<AttendanceRecord>> getTodayAttendance() {
         return ResponseEntity.ok(attendanceService.getTodayAttendance());
+    }
+
+    @GetMapping("/locations")
+    public ResponseEntity<List<AttendanceLocation>> getAvailableLocations() {
+        return ResponseEntity.ok(attendanceService.getAvailableLocations());
     }
 
     @GetMapping("/users")

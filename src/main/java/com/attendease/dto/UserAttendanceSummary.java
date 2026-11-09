@@ -6,5 +6,6 @@ public record UserAttendanceSummary(
         Long attendanceId,
         String status,
         LocalDateTime checkInTime,
-        LocalDateTime checkOutTime) {
+        LocalDateTime checkOutTime,
+        String locationName) {
 }

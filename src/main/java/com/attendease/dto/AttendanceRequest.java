@@ -14,6 +14,9 @@ public class AttendanceRequest {
     @NotNull(message = "Longitude is required")
     private Double longitude;
 
+    @NotNull(message = "Attendance location is required")
+    private Long locationId;
+
     @NotBlank(message = "Attendance type is required")
     private String attendanceType;
 
@@ -41,6 +44,14 @@ public class AttendanceRequest {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public Long getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
     }
 
     public String getAttendanceType() {

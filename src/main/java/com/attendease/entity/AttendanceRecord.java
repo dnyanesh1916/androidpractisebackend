@@ -15,6 +15,11 @@ public class AttendanceRecord {
     @Column(nullable = false)
     private Long userId;
 
+    private Long locationId;
+
+    @Column(length = 120)
+    private String locationName;
+
     @Column(nullable = false)
     private LocalDateTime checkInTime;
 
@@ -60,6 +65,22 @@ public class AttendanceRecord {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public LocalDateTime getCheckInTime() {

@@ -94,6 +94,11 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public List<UserSummary> getUsers(int year, int month) {
+        return getUsers(year, month, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserSummary> getUsers(int year, int month, String locationName) {
         YearMonth selectedMonth;
         try {
             selectedMonth = YearMonth.of(year, month);
@@ -103,13 +108,39 @@ public class AdminService {
 
         LocalDateTime start = selectedMonth.atDay(1).atStartOfDay();
         LocalDateTime end = selectedMonth.plusMonths(1).atDay(1).atStartOfDay().minusNanos(1);
+        AttendanceLocation selectedLocation = locationName == null || locationName.isBlank() ? null
+                : locationRepository.findAllByActiveTrue().stream()
+                        .filter(location -> location.getName().equals(locationName))
+                        .findFirst()
+                        .orElse(null);
+        if (locationName != null && !locationName.isBlank() && selectedLocation == null) {
+            throw new IllegalArgumentException("Active attendance location not found");
+        }
+        List<AttendanceLocation> knownLocations = new ArrayList<>(locationRepository.findAllByOrderByNameAsc());
+        if (selectedLocation != null
+                && knownLocations.stream().noneMatch(location -> location.getId().equals(selectedLocation.getId()))) {
+            knownLocations.add(selectedLocation);
+        }
         Map<Long, Set<LocalDate>> workedDates = new HashMap<>();
+        Map<Long, String> locationNames = new HashMap<>();
         Map<Long, BigDecimal> advances = new HashMap<>();
         Map<Long, BigDecimal> salaryPayments = new HashMap<>();
         for (AttendanceRecord record : attendanceRecordRepository.findByCheckInTimeBetweenOrderByCheckInTimeDesc(start, end)) {
-            if (record.getCheckInTime() != null) {
+            if (record.getCheckInTime() == null) {
+                continue;
+            }
+            AttendanceLocation recordedLocation = resolveAttendanceLocation(record, knownLocations);
+            String recordedLocationName = recordedLocation == null
+                    ? record.getLocationName() : recordedLocation.getName();
+            boolean matchesLocation = selectedLocation == null
+                    || (recordedLocation != null && selectedLocation.getId().equals(recordedLocation.getId()))
+                    || (recordedLocation == null && selectedLocation.getName().equals(record.getLocationName()));
+            if (matchesLocation) {
                 workedDates.computeIfAbsent(record.getUserId(), ignored -> new HashSet<>())
                         .add(record.getCheckInTime().toLocalDate());
+                if (recordedLocationName != null) {
+                    locationNames.putIfAbsent(record.getUserId(), recordedLocationName);
+                }
             }
         }
             for (CompensationTransaction transaction : compensationTransactionRepository.findByCreatedAtBetweenOrderByCreatedAtDesc(start, end)) {
@@ -120,19 +151,74 @@ public class AdminService {
 
         List<UserSummary> users = new ArrayList<>(userRepository.findAll().stream()
                 .filter(user -> user.getRole() == Role.USER)
-                .map(user -> toSummary(user, workedDates.getOrDefault(user.getId(), Set.of()).size(), selectedMonth,
-                    advances.get(user.getId()), salaryPayments.getOrDefault(user.getId(), BigDecimal.ZERO)))
+                .filter(user -> selectedLocation == null || workedDates.containsKey(user.getId()))
+                .map(user -> {
+                    UserSummary summary = toSummary(user, workedDates.getOrDefault(user.getId(), Set.of()).size(),
+                            selectedMonth, advances.get(user.getId()),
+                            salaryPayments.getOrDefault(user.getId(), BigDecimal.ZERO));
+                    summary.setLocationName(locationNames.get(user.getId()));
+                    return summary;
+                })
                 .toList());
 
-        legacyRegistrationRepository.findAll().stream()
-                .filter(registration -> registration.getEmail() == null
-                        || !userRepository.existsByEmail(registration.getEmail()))
-                .map(this::toLegacySummary)
-                .forEach(users::add);
+        if (selectedLocation == null) {
+            legacyRegistrationRepository.findAll().stream()
+                    .filter(registration -> registration.getEmail() == null
+                            || !userRepository.existsByEmail(registration.getEmail()))
+                    .map(this::toLegacySummary)
+                    .forEach(users::add);
+        }
 
         users.sort(Comparator.comparing(UserSummary::getCreatedAt,
                 Comparator.nullsLast(Comparator.reverseOrder())));
         return users;
+    }
+
+    private AttendanceLocation resolveAttendanceLocation(AttendanceRecord record, List<AttendanceLocation> locations) {
+        if (record.getLocationId() != null) {
+            return locations.stream()
+                    .filter(location -> location.getId().equals(record.getLocationId()))
+                    .findFirst()
+                    .orElse(null);
+        }
+        if (record.getLocationName() != null && !record.getLocationName().isBlank()) {
+            return locations.stream()
+                    .filter(location -> location.getName().equals(record.getLocationName()))
+                    .findFirst()
+                    .orElse(null);
+        }
+        if (!record.isLocationVerified()) {
+            return null;
+        }
+        return locations.stream()
+                .filter(location -> isWithinRadius(record.getCheckInLatitude(), record.getCheckInLongitude(),
+                        location.getLatitude(), location.getLongitude(), location.getRadiusMeters()))
+                .min(Comparator.comparingDouble(location -> distanceMeters(
+                        record.getCheckInLatitude(), record.getCheckInLongitude(),
+                        location.getLatitude(), location.getLongitude())))
+                .orElse(null);
+    }
+
+    private double distanceMeters(double latitude, double longitude, double centerLatitude, double centerLongitude) {
+        double earthRadius = 6_371_000;
+        double dLat = Math.toRadians(latitude - centerLatitude);
+        double dLng = Math.toRadians(longitude - centerLongitude);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(centerLatitude)) * Math.cos(Math.toRadians(latitude))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        return 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    private boolean isWithinRadius(double latitude, double longitude, double centerLatitude,
+                                   double centerLongitude, int allowedRadiusMeters) {
+        double earthRadius = 6_371_000;
+        double dLat = Math.toRadians(latitude - centerLatitude);
+        double dLng = Math.toRadians(longitude - centerLongitude);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(centerLatitude)) * Math.cos(Math.toRadians(latitude))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double distance = 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return distance <= allowedRadiusMeters;
     }
 
     @Transactional(readOnly = true)

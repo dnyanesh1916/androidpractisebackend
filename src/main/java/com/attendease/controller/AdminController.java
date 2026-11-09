@@ -83,10 +83,11 @@ public class AdminController {
 
     @GetMapping("/users")
     public ResponseEntity<List<UserSummary>> getUsers(@RequestParam(required = false) Integer year,
-                                                      @RequestParam(required = false) Integer month) {
+                                                      @RequestParam(required = false) Integer month,
+                                                      @RequestParam(required = false) String locationName) {
         LocalDate now = LocalDate.now();
         return ResponseEntity.ok(adminService.getUsers(year == null ? now.getYear() : year,
-                month == null ? now.getMonthValue() : month));
+                month == null ? now.getMonthValue() : month, locationName));
     }
 
     @PatchMapping("/users/{userId}/approve")
@@ -171,7 +172,8 @@ public class AdminController {
                 record.getId(),
                 record.getStatus(),
                 record.getCheckInTime(),
-                record.getCheckOutTime());
+                record.getCheckOutTime(),
+                record.getLocationName());
     }
 
     private ResponseEntity<byte[]> workbookResponse(String fileName, String contentType, byte[] workbook) {

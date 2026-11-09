@@ -30,15 +30,6 @@ public class AttendanceService {
     private final UserRepository userRepository;
     private final AdminActivityLogRepository adminActivityLogRepository;
 
-    @Value("${attendease.company.latitude:12.9716}")
-    private double companyLatitude;
-
-    @Value("${attendease.company.longitude:77.5946}")
-    private double companyLongitude;
-
-    @Value("${attendease.company.radius-meters:200}")
-    private int radiusMeters;
-
     @Value("${attendease.time-zone:Asia/Kolkata}")
     private String applicationTimeZone = "Asia/Kolkata";
 
@@ -63,11 +54,15 @@ public class AttendanceService {
             throw new IllegalArgumentException("Location is required");
         }
 
-        boolean locationVerified = isWithinConfiguredRadius(request.getLatitude(), request.getLongitude());
+        AttendanceLocation selectedLocation = attendanceLocationRepository.findById(request.getLocationId())
+                .filter(AttendanceLocation::isActive)
+                .orElseThrow(() -> new IllegalArgumentException("Select an active attendance location"));
+        boolean locationVerified = isWithinRadius(request.getLatitude(), request.getLongitude(),
+                selectedLocation.getLatitude(), selectedLocation.getLongitude(), selectedLocation.getRadiusMeters());
         boolean faceVerified = request.getFaceImageBase64() != null && !request.getFaceImageBase64().isBlank();
 
         if (!locationVerified) {
-            throw new IllegalArgumentException("Your location is outside the allowed attendance area");
+            throw new IllegalArgumentException("Your location is outside the allowed area for " + selectedLocation.getName());
         }
 
         if (!faceVerified) {
@@ -89,6 +84,8 @@ public class AttendanceService {
 
             AttendanceRecord record = new AttendanceRecord();
             record.setUserId(user.getId());
+            record.setLocationId(selectedLocation.getId());
+            record.setLocationName(selectedLocation.getName());
             record.setCheckInTime(LocalDateTime.now(zoneId));
             record.setCheckInLatitude(request.getLatitude());
             record.setCheckInLongitude(request.getLongitude());
@@ -98,7 +95,8 @@ public class AttendanceService {
             AttendanceRecord saved = attendanceRecordRepository.save(record);
 
             saveActivity(user.getId(), "CHECK_IN", "User checked in successfully");
-            return new AttendanceResponse(saved.getId(), saved.getStatus(), "Check-in successful", saved.getCheckInTime(), null);
+            return new AttendanceResponse(saved.getId(), saved.getStatus(), "Check-in successful",
+                    saved.getCheckInTime(), null, saved.getLocationName());
         }
 
         if ("CHECK_OUT".equals(type)) {
@@ -107,7 +105,13 @@ public class AttendanceService {
                     .filter(record -> record.getCheckOutTime() == null)
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No active check-in found for the user"));
+            if (latest.getLocationId() != null && !latest.getLocationId().equals(selectedLocation.getId())) {
+                throw new IllegalArgumentException("Check out at the location used for check-in: "
+                        + latest.getLocationName());
+            }
 
+            latest.setLocationId(selectedLocation.getId());
+            latest.setLocationName(selectedLocation.getName());
             latest.setCheckOutTime(LocalDateTime.now(zoneId));
             latest.setCheckOutLatitude(request.getLatitude());
             latest.setCheckOutLongitude(request.getLongitude());
@@ -117,7 +121,8 @@ public class AttendanceService {
             AttendanceRecord saved = attendanceRecordRepository.save(latest);
 
             saveActivity(user.getId(), "CHECK_OUT", "User checked out successfully");
-            return new AttendanceResponse(saved.getId(), saved.getStatus(), "Check-out successful", saved.getCheckInTime(), saved.getCheckOutTime());
+            return new AttendanceResponse(saved.getId(), saved.getStatus(), "Check-out successful",
+                    saved.getCheckInTime(), saved.getCheckOutTime(), saved.getLocationName());
         }
 
         throw new IllegalArgumentException("Attendance type must be CHECK_IN or CHECK_OUT");
@@ -133,6 +138,10 @@ public class AttendanceService {
                 LocalDateTime.of(today, LocalTime.MIDNIGHT),
                 LocalDateTime.of(today, LocalTime.MAX)
         );
+    }
+
+    public List<AttendanceLocation> getAvailableLocations() {
+        return attendanceLocationRepository.findAllByActiveTrue();
     }
 
     public List<UserSummary> getUsers() {
@@ -157,18 +166,6 @@ public class AttendanceService {
         long totalAbsent = Math.max(0, totalUsers - totalPresent);
 
         return new AdminSummary(totalUsers, totalPresent, totalLate, totalAbsent);
-    }
-
-    private boolean isWithinConfiguredRadius(double latitude, double longitude) {
-        List<AttendanceLocation> activeLocations = attendanceLocationRepository.findAllByActiveTrue();
-        if (!activeLocations.isEmpty()) {
-            return activeLocations.stream().anyMatch(location -> isWithinRadius(
-                    latitude, longitude, location.getLatitude(), location.getLongitude(), location.getRadiusMeters()));
-        }
-        if (attendanceLocationRepository.count() > 0) {
-            return false;
-        }
-        return isWithinRadius(latitude, longitude, companyLatitude, companyLongitude, radiusMeters);
     }
 
     private boolean isWithinRadius(double latitude, double longitude, double centerLatitude,
