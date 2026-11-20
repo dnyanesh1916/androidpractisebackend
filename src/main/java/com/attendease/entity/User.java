@@ -3,6 +3,7 @@ package com.attendease.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +24,15 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "password_reset_code_hash", length = 100)
+    private String passwordResetCodeHash;
+
+    @Column(name = "password_reset_expires_at")
+    private LocalDateTime passwordResetExpiresAt;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -82,6 +92,30 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPasswordResetCodeHash() {
+        return passwordResetCodeHash;
+    }
+
+    public void setPasswordResetCodeHash(String passwordResetCodeHash) {
+        this.passwordResetCodeHash = passwordResetCodeHash;
+    }
+
+    public LocalDateTime getPasswordResetExpiresAt() {
+        return passwordResetExpiresAt;
+    }
+
+    public void setPasswordResetExpiresAt(LocalDateTime passwordResetExpiresAt) {
+        this.passwordResetExpiresAt = passwordResetExpiresAt;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public Role getRole() {

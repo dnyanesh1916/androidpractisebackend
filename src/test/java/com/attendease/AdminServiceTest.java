@@ -3,10 +3,12 @@ package com.attendease;
 import com.attendease.dto.CompensationTransactionRequest;
 import com.attendease.entity.CompensationTransaction;
 import com.attendease.entity.CompensationTransactionType;
+import com.attendease.entity.AdminActivityLog;
 import com.attendease.entity.AttendanceRecord;
 import com.attendease.entity.AttendanceLocation;
 import com.attendease.entity.Role;
 import com.attendease.entity.User;
+import com.attendease.dto.RecoveryCodeResponse;
 import com.attendease.repository.AdminActivityLogRepository;
 import com.attendease.repository.AttendanceLocationRepository;
 import com.attendease.repository.AttendanceRecordRepository;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -50,11 +56,46 @@ class AdminServiceTest {
     private CompensationTransactionRepository compensationTransactionRepository;
 
     private AdminService adminService;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
     void setUp() {
         adminService = new AdminService(userRepository, legacyRegistrationRepository, locationRepository,
-                activityLogRepository, attendanceRecordRepository, compensationTransactionRepository);
+                activityLogRepository, attendanceRecordRepository, compensationTransactionRepository, passwordEncoder);
+    }
+
+    @Test
+    void issuesOneTimeRecoveryCodeAndStoresOnlyItsHash() {
+        User target = activeUser();
+        User admin = new User();
+        admin.setId(1L);
+        admin.setEmail("admin@example.com");
+        admin.setRole(Role.ADMIN);
+        when(userRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(target));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
+        when(userRepository.save(target)).thenReturn(target);
+
+        RecoveryCodeResponse response = adminService.issuePasswordRecoveryCode(2L, "user1");
+
+        assertEquals(16, response.getRecoveryCode().length());
+        assertTrue(passwordEncoder.matches(response.getRecoveryCode(), target.getPasswordResetCodeHash()));
+        assertNotEquals(response.getRecoveryCode(), target.getPasswordResetCodeHash());
+        assertTrue(target.getPasswordResetExpiresAt().isAfter(LocalDateTime.now()));
+        verify(activityLogRepository).save(any(AdminActivityLog.class));
+    }
+
+    @Test
+    void doesNotIssueRecoveryCodeForAdminAccount() {
+        User admin = new User();
+        admin.setId(2L);
+        admin.setRole(Role.ADMIN);
+        when(userRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(admin));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> adminService.issuePasswordRecoveryCode(2L, "user1"));
+
+        assertEquals("Recovery codes can only be issued for regular users", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test

@@ -14,6 +14,8 @@ C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendeas
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\AuthResponse.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\CompensationTransactionRequest.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\LoginRequest.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\PasswordResetWithCodeRequest.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\RecoveryCodeResponse.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\RegisterRequest.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\SalaryUpdateRequest.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\dto\UserApprovalRequest.java
@@ -39,5 +41,7 @@ C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendeas
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\AdminService.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\AttendanceService.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\AuthService.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\FirebaseIdentityService.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\RegistrationService.java
 C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\RegistrationServiceImpl.java
+C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend\src\main\java\com\attendease\service\TwilioVerifyService.java

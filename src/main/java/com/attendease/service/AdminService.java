@@ -2,6 +2,7 @@ package com.attendease.service;
 
 import com.attendease.dto.AttendanceLocationRequest;
 import com.attendease.dto.CompensationTransactionRequest;
+import com.attendease.dto.RecoveryCodeResponse;
 import com.attendease.dto.SalaryUpdateRequest;
 import com.attendease.dto.UserSummary;
 import com.attendease.entity.AdminActivityLog;
@@ -22,6 +23,7 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -46,6 +50,10 @@ public class AdminService {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminService.class);
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^user([1-9][0-9]*)$");
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final String RECOVERY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    private static final int RECOVERY_CODE_LENGTH = 16;
+    private static final Duration RECOVERY_CODE_LIFETIME = Duration.ofMinutes(15);
 
     private final UserRepository userRepository;
     private final UserRegistrationRepository legacyRegistrationRepository;
@@ -53,6 +61,7 @@ public class AdminService {
     private final AdminActivityLogRepository activityLogRepository;
     private final AttendanceRecordRepository attendanceRecordRepository;
     private final CompensationTransactionRepository compensationTransactionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${attendease.company.latitude:12.9716}")
     private double defaultLatitude;
@@ -68,13 +77,15 @@ public class AdminService {
                         AttendanceLocationRepository locationRepository,
                         AdminActivityLogRepository activityLogRepository,
                         AttendanceRecordRepository attendanceRecordRepository,
-                        CompensationTransactionRepository compensationTransactionRepository) {
+                        CompensationTransactionRepository compensationTransactionRepository,
+                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.legacyRegistrationRepository = legacyRegistrationRepository;
         this.locationRepository = locationRepository;
         this.activityLogRepository = activityLogRepository;
         this.attendanceRecordRepository = attendanceRecordRepository;
         this.compensationTransactionRepository = compensationTransactionRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct
@@ -282,6 +293,32 @@ public class AdminService {
         return getUserSummary(userId, currentMonth.getYear(), currentMonth.getMonthValue());
     }
 
+    @Transactional
+    public RecoveryCodeResponse issuePasswordRecoveryCode(Long userId, String adminUsername) {
+        User user = userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user.getRole() != Role.USER) {
+            throw new IllegalArgumentException("Recovery codes can only be issued for regular users");
+        }
+
+        String recoveryCode = generateRecoveryCode();
+        user.setPasswordResetCodeHash(passwordEncoder.encode(recoveryCode));
+        user.setPasswordResetExpiresAt(LocalDateTime.now().plus(RECOVERY_CODE_LIFETIME));
+        userRepository.save(user);
+        recordActivity(adminUsername, "USER_RECOVERY_CODE_ISSUED",
+                "Issued a one-time password recovery code for " + user.getUsername());
+        logger.info("Admin {} issued a password recovery code for userId={}", adminUsername, userId);
+        return new RecoveryCodeResponse(recoveryCode);
+    }
+
+    private String generateRecoveryCode() {
+        StringBuilder code = new StringBuilder(RECOVERY_CODE_LENGTH);
+        for (int index = 0; index < RECOVERY_CODE_LENGTH; index++) {
+            code.append(RECOVERY_CODE_ALPHABET.charAt(SECURE_RANDOM.nextInt(RECOVERY_CODE_ALPHABET.length())));
+        }
+        return code.toString();
+    }
+
     @Transactional(readOnly = true)
     public UserSummary getUserSummary(Long userId, int year, int month) {
         YearMonth selectedMonth;
@@ -358,6 +395,7 @@ public class AdminService {
         User user = new User();
         user.setFullName(registration.getFullName());
         user.setEmail(registration.getEmail());
+        user.setDateOfBirth(registration.getDateOfBirth());
         user.setPassword(registration.getPassword());
         user.setRole(Role.USER);
         user.setActive(true);

@@ -1,6 +1,7 @@
 package com.attendease;
 
 import com.attendease.dto.LoginRequest;
+import com.attendease.dto.PasswordResetWithCodeRequest;
 import com.attendease.dto.RegisterRequest;
 import com.attendease.entity.Role;
 import com.attendease.entity.User;
@@ -18,10 +19,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -127,6 +132,7 @@ class AuthServiceTest {
     void shouldSaveNewRegistrationAsPendingApproval() {
         RegisterRequest request = new RegisterRequest();
         request.setFullName("New User");
+        request.setDateOfBirth(LocalDate.of(1990, 1, 1));
         request.setPassword("Password@123");
         request.setConfirmPassword("Password@123");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
@@ -142,5 +148,52 @@ class AuthServiceTest {
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(savedUser.capture());
         assertFalse(savedUser.getValue().isActive());
+        assertEquals(LocalDate.of(1990, 1, 1), savedUser.getValue().getDateOfBirth());
     }
+
+    @Test
+    void shouldResetPasswordAndConsumeValidRecoveryCode() {
+        User user = new User();
+        user.setId(3L);
+        user.setRole(Role.USER);
+        user.setPassword("old-password-hash");
+        user.setPasswordResetCodeHash(passwordEncoder.encode("ABCD2345EFGH6789"));
+        user.setPasswordResetExpiresAt(LocalDateTime.now().plusMinutes(10));
+        when(userRepository.findByIdForUpdate(3L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        PasswordResetWithCodeRequest request = recoveryRequest("ABCD2345EFGH6789");
+        authService.resetPasswordWithCode(request);
+
+        assertTrue(passwordEncoder.matches("NewPassword@123", user.getPassword()));
+        assertNull(user.getPasswordResetCodeHash());
+        assertNull(user.getPasswordResetExpiresAt());
+        assertThrows(IllegalArgumentException.class, () -> authService.resetPasswordWithCode(request));
+    }
+
+    @Test
+    void shouldRejectExpiredRecoveryCode() {
+        User user = new User();
+        user.setId(3L);
+        user.setRole(Role.USER);
+        user.setPasswordResetCodeHash(passwordEncoder.encode("ABCD2345EFGH6789"));
+        user.setPasswordResetExpiresAt(LocalDateTime.now().minusMinutes(1));
+        when(userRepository.findByIdForUpdate(3L)).thenReturn(Optional.of(user));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> authService.resetPasswordWithCode(recoveryRequest("ABCD2345EFGH6789")));
+
+        assertEquals("Invalid or expired recovery code", exception.getMessage());
+        verify(userRepository, org.mockito.Mockito.never()).save(any(User.class));
+    }
+
+    private PasswordResetWithCodeRequest recoveryRequest(String recoveryCode) {
+        PasswordResetWithCodeRequest request = new PasswordResetWithCodeRequest();
+        request.setUsername("user3");
+        request.setRecoveryCode(recoveryCode);
+        request.setPassword("NewPassword@123");
+        request.setConfirmPassword("NewPassword@123");
+        return request;
+    }
+
 }

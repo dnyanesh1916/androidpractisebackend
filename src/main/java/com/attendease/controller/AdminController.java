@@ -3,6 +3,7 @@ package com.attendease.controller;
 import com.attendease.dto.AdminSummary;
 import com.attendease.dto.AttendanceLocationRequest;
 import com.attendease.dto.CompensationTransactionRequest;
+import com.attendease.dto.RecoveryCodeResponse;
 import com.attendease.dto.SalaryUpdateRequest;
 import com.attendease.dto.UserApprovalRequest;
 import com.attendease.dto.UserAttendanceSummary;
@@ -49,7 +50,6 @@ public class AdminController {
     private final AttendanceService attendanceService;
     private final AdminService adminService;
     private final AdminDataExportService adminDataExportService;
-
     public AdminController(AttendanceService attendanceService, AdminService adminService,
                            AdminDataExportService adminDataExportService) {
         this.attendanceService = attendanceService;
@@ -104,6 +104,12 @@ public class AdminController {
                                                     @Valid @RequestBody SalaryUpdateRequest request,
                                                     @AuthenticationPrincipal String adminUsername) {
         return ResponseEntity.ok(adminService.updateSalary(userId, request, adminUsername));
+    }
+
+    @PostMapping("/users/{userId}/recovery-code")
+    public ResponseEntity<RecoveryCodeResponse> issuePasswordRecoveryCode(@PathVariable Long userId,
+                                                                          @AuthenticationPrincipal String adminUsername) {
+        return ResponseEntity.ok(adminService.issuePasswordRecoveryCode(userId, adminUsername));
     }
 
     @GetMapping("/users/{userId}/transactions")

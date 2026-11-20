@@ -2,6 +2,7 @@ package com.attendease.service;
 
 import com.attendease.dto.AuthResponse;
 import com.attendease.dto.LoginRequest;
+import com.attendease.dto.PasswordResetWithCodeRequest;
 import com.attendease.dto.RegisterRequest;
 import com.attendease.entity.Role;
 import com.attendease.entity.User;
@@ -12,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +26,7 @@ public class AuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^user([1-9][0-9]*)$");
-
+    private static final Pattern RECOVERY_CODE_PATTERN = Pattern.compile("^[A-HJ-NP-Z2-9]{16}$");
     private final UserRepository userRepository;
     private final UserRegistrationRepository userRegistrationRepository;
     private final PasswordEncoder passwordEncoder;
@@ -47,6 +51,7 @@ public class AuthService {
         User user = new User();
         user.setFullName(request.getFullName().trim());
         user.setEmail("user-" + UUID.randomUUID() + "@attendease.invalid");
+        user.setDateOfBirth(request.getDateOfBirth());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setProfileImage(request.getProfileImage());
         user.setRole(Role.USER);
@@ -111,6 +116,44 @@ public class AuthService {
         logger.info("Password validation succeeded for username={} using id={}", username, user.getId());
         return new AuthResponse(user.getId(), user.getFullName(), null, user.getRole().name(),
                 user.getProfileImage(), "Login successful");
+    }
+
+    @Transactional
+    public void resetPasswordWithCode(PasswordResetWithCodeRequest request) {
+        if (request == null || request.getPassword() == null
+                || !request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Password and confirm password must match");
+        }
+
+        Matcher usernameMatcher = USERNAME_PATTERN.matcher(
+                request.getUsername() == null ? "" : request.getUsername().trim());
+        String recoveryCode = request.getRecoveryCode() == null ? ""
+                : request.getRecoveryCode().trim().toUpperCase(Locale.ROOT);
+        if (!usernameMatcher.matches() || !RECOVERY_CODE_PATTERN.matcher(recoveryCode).matches()) {
+            throw new IllegalArgumentException("Invalid User ID or recovery code");
+        }
+
+        long userId;
+        try {
+            userId = Long.parseLong(usernameMatcher.group(1));
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Invalid User ID or recovery code");
+        }
+
+        User user = userRepository.findByIdForUpdate(userId).orElse(null);
+        if (user == null || user.getRole() != Role.USER
+                || user.getPasswordResetCodeHash() == null
+                || user.getPasswordResetExpiresAt() == null
+                || !user.getPasswordResetExpiresAt().isAfter(LocalDateTime.now())
+                || !passwordEncoder.matches(recoveryCode, user.getPasswordResetCodeHash())) {
+            throw new IllegalArgumentException("Invalid or expired recovery code");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPasswordResetCodeHash(null);
+        user.setPasswordResetExpiresAt(null);
+        userRepository.save(user);
+        logger.info("Password reset completed using a one-time recovery code for userId={}", userId);
     }
 
     private boolean isPasswordValid(String rawPassword, String storedPassword) {

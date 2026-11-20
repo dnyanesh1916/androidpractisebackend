@@ -2,6 +2,7 @@ package com.attendease.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,6 +20,9 @@ public class UserRegistration {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Column(nullable = false)
     private String password;
@@ -53,6 +57,14 @@ public class UserRegistration {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getPassword() {

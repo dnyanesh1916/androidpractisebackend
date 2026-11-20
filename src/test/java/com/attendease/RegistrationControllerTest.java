@@ -43,7 +43,7 @@ class RegistrationControllerTest {
         mockMvc.perform(post("/api/register")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"fullName\":\"John Doe\",\"email\":\"john@company.com\",\"password\":\"Password@123\",\"confirmPassword\":\"Password@123\"}"))
+                        .content("{\"fullName\":\"John Doe\",\"email\":\"john@company.com\",\"dateOfBirth\":\"1990-01-01\",\"password\":\"Password@123\",\"confirmPassword\":\"Password@123\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.userId").value(1));

@@ -38,6 +38,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         UserRegistration user = new UserRegistration();
         user.setFullName(request.getFullName().trim());
         user.setEmail(email);
+        user.setDateOfBirth(request.getDateOfBirth());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         return repository.save(user);

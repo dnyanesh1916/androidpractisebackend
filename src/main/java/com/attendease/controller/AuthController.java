@@ -2,6 +2,7 @@ package com.attendease.controller;
 
 import com.attendease.dto.AuthResponse;
 import com.attendease.dto.LoginRequest;
+import com.attendease.dto.PasswordResetWithCodeRequest;
 import com.attendease.dto.RegisterRequest;
 import com.attendease.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,12 +11,15 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -73,6 +78,28 @@ public class AuthController {
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    @PostMapping("/password-reset")
+    public ResponseEntity<Map<String, String>> resetPasswordWithCode(
+            @Valid @RequestBody PasswordResetWithCodeRequest request) {
+        authService.resetPasswordWithCode(request);
+        return ResponseEntity.ok(Map.of("message", "Password updated successfully."));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPasswordRecovery(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPasswordRecoveryRequest(
+            MethodArgumentNotValidException exception) {
+        String message = exception.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("Invalid password recovery request");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", message));
     }
 
     @PostMapping("/logout")
