@@ -53,6 +53,7 @@ public class AdminService {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final String RECOVERY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private static final int RECOVERY_CODE_LENGTH = 16;
+
     private static final Duration RECOVERY_CODE_LIFETIME = Duration.ofMinutes(15);
 
     private final UserRepository userRepository;
