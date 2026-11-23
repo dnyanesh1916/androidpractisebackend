@@ -36,8 +36,10 @@ import java.util.Map;
 import java.util.Set;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.YearMonth;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -238,7 +240,14 @@ public class AdminService {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("User not found");
         }
-        return compensationTransactionRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        List<CompensationTransaction> transactions =
+                compensationTransactionRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        logger.info("Loaded {} compensation transactions for userId={} using serverZone={}; timestamps={}",
+                transactions.size(), userId, ZoneId.systemDefault(),
+                transactions.stream()
+                        .map(transaction -> transaction.getId() + "=" + transaction.getCreatedAt())
+                        .toList());
+        return transactions;
     }
 
     @Transactional
@@ -270,6 +279,8 @@ public class AdminService {
         transaction.setDescription(request.getDescription().trim());
         transaction.setRecordedByEmail(admin.getEmail() == null ? admin.getUsername() : admin.getEmail());
         CompensationTransaction saved = compensationTransactionRepository.save(transaction);
+        logger.info("Created compensation transaction id={} for userId={} with createdAt={} serverZone={} serverInstant={}",
+                saved.getId(), userId, saved.getCreatedAt(), ZoneId.systemDefault(), Instant.now());
         String action = request.getType() == CompensationTransactionType.ADVANCE
                 ? "ADVANCE_RECORDED" : "SALARY_PAYMENT_RECORDED";
         recordActivity(adminUsername, action, request.getType() + " of " + request.getAmount() + " for "
