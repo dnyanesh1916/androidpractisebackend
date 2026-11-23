@@ -508,3 +508,16 @@ This generated password is for development use only. Your security configuration
 2026-11-23T22:51:58.742+05:30  INFO 6352 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
 2026-11-23T22:51:58.744+05:30  INFO 6352 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
 2026-11-23T22:51:58.776+05:30  INFO 6352 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.204 seconds (process running for 6.436)
+2026-11-23T22:57:17.008+05:30  INFO 35960 --- [main] c.attendease.RegistrationControllerTest  : Starting RegistrationControllerTest using Java 17.0.11 with PID 35960 (started by Dnyaneshwar in C:\Users\Dnyaneshwar\Downloads\a2\attendease-backend)
+2026-11-23T22:57:17.011+05:30  INFO 35960 --- [main] c.attendease.RegistrationControllerTest  : The following 1 profile is active: "prod"
+2026-11-23T22:57:18.082+05:30  WARN 35960 --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: ba1aabd5-3c9b-49de-98c2-477000167461
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-23T22:57:18.095+05:30  INFO 35960 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-23T22:57:18.721+05:30  INFO 35960 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-23T22:57:18.721+05:30  INFO 35960 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-23T22:57:18.723+05:30  INFO 35960 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-11-23T22:57:18.756+05:30  INFO 35960 --- [main] c.attendease.RegistrationControllerTest  : Started RegistrationControllerTest in 2.338 seconds (process running for 6.844)
